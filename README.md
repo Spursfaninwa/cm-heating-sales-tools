@@ -132,7 +132,7 @@ Weekly
 
 | Name | Role |
 |------|------|
-| Geoff Simons | Sales VP |
+| Geoff Simons | Sales MGR |
 | Paul | Sr VP |
 | Kailana | GM |
 
