@@ -45,8 +45,6 @@ body::before {
   padding:20px 36px 16px;
   gap:16px;
 }
-
-/* HEADER */
 .header {
   display:flex;
   justify-content:space-between;
@@ -115,21 +113,11 @@ body::before {
   background:var(--orange);
   color:white;
 }
-
-/* MAIN VIEW — same layout for both Weekly and YTD */
-.board-view {
-  display:none;
-  flex:1;
-  flex-direction:row;
-  gap:20px;
-  overflow:hidden;
-}
-.board-view.active { display:flex; }
-
+.view { display:none; flex:1; overflow:hidden; }
+.view.active { display:flex; }
+#rankings-view { flex-direction:row; gap:20px; }
 .left-col { flex:1.3; display:flex; flex-direction:column; gap:10px; }
 .right-col { flex:1; display:flex; flex-direction:column; gap:8px; justify-content:center; }
-
-/* TOP 3 */
 .rank-1-card {
   background:linear-gradient(135deg, rgba(251,191,36,0.1), rgba(249,115,22,0.06));
   border:1px solid rgba(251,191,36,0.25);
@@ -216,8 +204,6 @@ body::before {
   margin-top:2px;
   font-weight:600;
 }
-
-/* ROWS 4-9 */
 .rank-row {
   background:var(--surface);
   border:1px solid var(--surface2);
@@ -228,12 +214,6 @@ body::before {
   gap:16px;
   animation:slideRight 0.4s ease both;
 }
-.rank-row:nth-child(1){animation-delay:0.3s}
-.rank-row:nth-child(2){animation-delay:0.35s}
-.rank-row:nth-child(3){animation-delay:0.4s}
-.rank-row:nth-child(4){animation-delay:0.45s}
-.rank-row:nth-child(5){animation-delay:0.5s}
-.rank-row:nth-child(6){animation-delay:0.55s}
 .row-num {
   font-family:'Barlow Condensed',sans-serif;
   font-size:20px; font-weight:700;
@@ -267,26 +247,115 @@ body::before {
   min-width:80px;
   text-align:right;
 }
-
-/* PERIOD BADGE */
-.period-badge {
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  background:var(--surface2);
-  border:1px solid var(--surface);
-  border-radius:6px;
-  padding:6px 14px;
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:12px;
-  font-weight:700;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-  color:var(--muted);
+#detail-view.active {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+  gap:12px;
 }
-.period-badge span { color:var(--orange); }
-
-/* COUNTDOWN */
+.hca-card {
+  background:var(--surface);
+  border:1px solid var(--surface2);
+  border-radius:12px;
+  padding:18px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  animation:fadeUp 0.4s ease both;
+  position:relative;
+  overflow:hidden;
+}
+.hca-card.top-card {
+  border-color:rgba(251,191,36,0.3);
+  background:linear-gradient(135deg,rgba(251,191,36,0.07),var(--surface));
+}
+.hca-card.top-card::before {
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg,var(--gold),var(--orange));
+}
+@keyframes fadeUp {
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hca-card:nth-child(1){animation-delay:0.05s}
+.hca-card:nth-child(2){animation-delay:0.1s}
+.hca-card:nth-child(3){animation-delay:0.15s}
+.hca-card:nth-child(4){animation-delay:0.2s}
+.hca-card:nth-child(5){animation-delay:0.25s}
+.hca-card:nth-child(6){animation-delay:0.3s}
+.hca-card:nth-child(7){animation-delay:0.35s}
+.hca-card:nth-child(8){animation-delay:0.4s}
+.hca-card:nth-child(9){animation-delay:0.45s}
+.dc-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+.dc-rank {
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  margin-bottom:2px;
+}
+.dc-name {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:26px; font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.dc-pts {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:38px; font-weight:900;
+  color:var(--orange);
+  line-height:1;
+  text-align:right;
+}
+.dc-pts-lbl {
+  font-size:10px;
+  color:var(--muted);
+  letter-spacing:1px;
+  text-transform:uppercase;
+  text-align:right;
+  font-weight:600;
+}
+.dc-metrics {
+  display:flex;
+  gap:8px;
+}
+.metric {
+  flex:1;
+  background:var(--surface2);
+  border-radius:6px;
+  padding:8px 6px;
+  text-align:center;
+}
+.metric-val {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:22px; font-weight:800;
+  line-height:1;
+}
+.metric-lbl {
+  font-size:10px;
+  color:var(--muted);
+  font-weight:500;
+  margin-top:2px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+.conv-val { color:var(--green); }
+.pipe-val { color:var(--blue); }
+.att-val  { color:var(--orange); }
+.dc-bar { height:3px; background:var(--surface2); border-radius:2px; overflow:hidden; }
+.dc-bar-fill {
+  height:100%;
+  border-radius:2px;
+  background:linear-gradient(90deg,var(--orange),var(--gold));
+}
 .countdown {
   position:fixed;
   bottom:14px;
@@ -306,11 +375,10 @@ body::before {
 </head>
 <body>
 <div class="app">
-
   <div class="header">
     <div class="header-left">
       <div class="logo-area">
-        <img src="data:image/webp;base64,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" alt="CM Heating">
+        <img src="https://cmheating.github.io/sales-tools/cm-logo.webp" alt="CM Heating">
       </div>
       <div class="title">
         <h1>Follow-Up Leaderboard</h1>
@@ -320,133 +388,131 @@ body::before {
     <div class="header-right">
       <div class="live-badge"><div class="live-dot"></div>Live</div>
       <div class="toggle">
-        <button class="toggle-btn active" onclick="switchView('weekly',this)">This Week</button>
-        <button class="toggle-btn" onclick="switchView('ytd',this)">Year to Date</button>
+        <button class="toggle-btn active" onclick="switchView('rankings',this)">Rankings</button>
+        <button class="toggle-btn" onclick="switchView('detail',this)">Detail</button>
       </div>
     </div>
   </div>
 
-  <div id="weekly-view" class="board-view active">
-    <div class="left-col" id="weekly-podium"></div>
-    <div class="right-col" id="weekly-lower"></div>
+  <div id="rankings-view" class="view active">
+    <div class="left-col" id="podium"></div>
+    <div class="right-col" id="lower"></div>
   </div>
-
-  <div id="ytd-view" class="board-view">
-    <div class="left-col" id="ytd-podium"></div>
-    <div class="right-col" id="ytd-lower"></div>
-  </div>
-
+  <div id="detail-view" class="view"></div>
 </div>
 <div class="countdown" id="countdown"></div>
 
 <script>
-const PTS = {
-  conversion: 100,
-  docEntry:    20,
-  attempt:     10,
-};
-
 const HCA_COLORS = {
   Amber:'#f472b6', Chester:'#a78bfa', Davis:'#34d399',
   Jay:'#38bdf8', Joe:'#fb923c', Joseph:'#fbbf24',
   Kyle:'#4ade80', Samir:'#e879f9', Trevor:'#67e8f9'
 };
 
-// ── WEEKLY DATA (current week) ──
-const weeklyData = {
-  Amber:   { conversions:1, attempts:8,  documented:7,  totalLeads:11 },
-  Chester: { conversions:2, attempts:14, documented:10, totalLeads:24 },
-  Davis:   { conversions:0, attempts:6,  documented:4,  totalLeads:16 },
-  Jay:     { conversions:2, attempts:12, documented:11, totalLeads:18 },
-  Joe:     { conversions:1, attempts:5,  documented:3,  totalLeads:10 },
-  Joseph:  { conversions:1, attempts:9,  documented:8,  totalLeads:13 },
-  Kyle:    { conversions:1, attempts:11, documented:9,  totalLeads:16 },
-  Samir:   { conversions:0, attempts:4,  documented:2,  totalLeads:0  },
-  Trevor:  { conversions:1, attempts:7,  documented:6,  totalLeads:7  },
-};
+// REAL DATA — updated May 5, 2026
+const data = [
+  { name:'Kyle',    conv:44, attempts:17, conversions:47, totalLeads:47, pipeline:839471,  pts:4870 },
+  { name:'Davis',   conv:45, attempts:3,  conversions:45, totalLeads:38, pipeline:630774,  pts:4530 },
+  { name:'Joseph',  conv:42, attempts:2,  conversions:44, totalLeads:61, pipeline:1170787, pts:4420 },
+  { name:'Jay',     conv:40, attempts:18, conversions:40, totalLeads:55, pipeline:839559,  pts:4180 },
+  { name:'Joe',     conv:45, attempts:1,  conversions:42, totalLeads:49, pipeline:810296,  pts:4210 },
+  { name:'Chester', conv:38, attempts:62, conversions:34, totalLeads:55, pipeline:1027398, pts:4020 },
+  { name:'Amber',   conv:40, attempts:35, conversions:34, totalLeads:33, pipeline:645444,  pts:3750 },
+  { name:'Samir',   conv:38, attempts:23, conversions:31, totalLeads:49, pipeline:774502,  pts:3330 },
+  { name:'Trevor',  conv:40, attempts:28, conversions:23, totalLeads:20, pipeline:397555,  pts:2580 },
+];
 
-// ── YEAR TO DATE DATA (cumulative — update each week) ──
-const ytdData = {
-  Amber:   { conversions:6,  attempts:44, documented:38, totalLeads:52 },
-  Chester: { conversions:11, attempts:68, documented:49, totalLeads:98 },
-  Davis:   { conversions:3,  attempts:28, documented:18, totalLeads:61 },
-  Jay:     { conversions:10, attempts:59, documented:54, totalLeads:77 },
-  Joe:     { conversions:5,  attempts:31, documented:19, totalLeads:44 },
-  Joseph:  { conversions:7,  attempts:47, documented:41, totalLeads:58 },
-  Kyle:    { conversions:6,  attempts:52, documented:43, totalLeads:69 },
-  Samir:   { conversions:1,  attempts:14, documented:7,  totalLeads:12 },
-  Trevor:  { conversions:8,  attempts:38, documented:32, totalLeads:34 },
-};
-
-function calcPts(d) {
-  return (d.conversions * PTS.conversion)
-       + (d.documented  * PTS.docEntry)
-       + (d.attempts    * PTS.attempt);
-}
-function convRate(d){ return d.totalLeads > 0 ? Math.round((d.conversions/d.totalLeads)*100) : 0; }
-function docRate(d) { return d.attempts > 0   ? Math.round((d.documented/d.attempts)*100)   : 0; }
-
-function ranked(dataset) {
-  return Object.entries(dataset)
-    .map(([n,d]) => ({ name:n, ...d, pts:calcPts(d), conv:convRate(d), doc:docRate(d) }))
-    .sort((a,b) => b.pts - a.pts);
+function fmtPipe(n) {
+  if(n>=1000000) return '$'+(n/1000000).toFixed(1)+'M';
+  return '$'+Math.round(n/1000)+'K';
 }
 
-function renderBoard(dataset, podiumId, lowerId) {
-  const r = ranked(dataset);
-  const maxPts = r[0].pts || 1;
+function setWeek() {
+  const now = new Date();
+  const day = now.getDay();
+  const mon = new Date(now); mon.setDate(now.getDate()-((day+6)%7));
+  const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+  const fmt = d => d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  document.getElementById('weekLabel').textContent = `YTD through ${now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
+}
 
-  const podiumEl = document.getElementById(podiumId);
-  const lowerEl  = document.getElementById(lowerId);
+function renderRankings() {
+  const sorted = [...data].sort((a,b)=>b.pts-a.pts);
+  const maxPts = sorted[0].pts;
+  const podiumEl = document.getElementById('podium');
+  const lowerEl = document.getElementById('lower');
 
-  podiumEl.innerHTML = r.slice(0,3).map((h,i) => {
+  podiumEl.innerHTML = sorted.slice(0,3).map((h,i) => {
     const cls = ['rank-1-card','rank-2-card','rank-3-card'][i];
-    const medalEl = i===0
-      ? `<div class="crown">👑</div>`
-      : `<div class="medal">${i+1}</div>`;
+    const medalEl = i===0 ? `<div class="crown">👑</div>` : `<div class="medal">${i+1}</div>`;
     const ptsColor = i===0 ? 'var(--gold)' : i===1 ? 'var(--silver)' : 'var(--bronze)';
-    return `
-      <div class="${cls}">
-        ${medalEl}
-        <div class="card-info">
-          <div class="card-name" style="color:${HCA_COLORS[h.name]||'var(--white)'}">${h.name}</div>
-          <div class="card-stats">
-            <div class="card-stat">Conv: <strong>${h.conv}%</strong></div>
-            <div class="card-stat">Doc: <strong>${h.doc}%</strong></div>
-            <div class="card-stat">Attempts: <strong>${h.attempts}</strong></div>
-          </div>
+    return `<div class="${cls}">
+      ${medalEl}
+      <div class="card-info">
+        <div class="card-name" style="color:${HCA_COLORS[h.name]||'var(--white)'}">${h.name}</div>
+        <div class="card-stats">
+          <div class="card-stat">Conv: <strong>${h.conv}%</strong></div>
+          <div class="card-stat">Pipeline: <strong>${fmtPipe(h.pipeline)}</strong></div>
+          <div class="card-stat">Attempts: <strong>${h.attempts}</strong></div>
         </div>
-        <div>
-          <div class="card-pts" style="color:${ptsColor}">${h.pts}</div>
-          <div class="pts-lbl">points</div>
-        </div>
-      </div>`;
+      </div>
+      <div>
+        <div class="card-pts" style="color:${ptsColor}">${h.pts.toLocaleString()}</div>
+        <div class="pts-lbl">points</div>
+      </div>
+    </div>`;
   }).join('');
 
-  lowerEl.innerHTML = r.slice(3).map((h,i) => `
+  lowerEl.innerHTML = sorted.slice(3).map((h,i) => `
     <div class="rank-row">
       <div class="row-num">${i+4}</div>
       <div class="row-name" style="color:${HCA_COLORS[h.name]||'var(--white)'}">${h.name}</div>
       <div class="row-bar-wrap">
         <div class="row-bar" style="width:${Math.round((h.pts/maxPts)*100)}%;background:${HCA_COLORS[h.name]||'var(--orange)'}"></div>
       </div>
-      <div class="row-pts">${h.pts}</div>
+      <div class="row-pts">${h.pts.toLocaleString()}</div>
     </div>`).join('');
 }
 
-function setWeek() {
-  const now = new Date();
-  const day = now.getDay();
-  const mon = new Date(now); mon.setDate(now.getDate() - ((day+6)%7));
-  const sun = new Date(mon); sun.setDate(mon.getDate()+6);
-  const fmt = d => d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-  document.getElementById('weekLabel').textContent = `Week of ${fmt(mon)} — ${fmt(sun)}`;
+function renderDetail() {
+  const sorted = [...data].sort((a,b)=>b.pts-a.pts);
+  const maxPts = sorted[0].pts;
+  const el = document.getElementById('detail-view');
+  el.innerHTML = sorted.map((h,i) => `
+    <div class="hca-card ${i===0?'top-card':''}">
+      <div class="dc-header">
+        <div>
+          <div class="dc-rank">#${i+1} ${i===0?'👑':''}</div>
+          <div class="dc-name" style="color:${HCA_COLORS[h.name]||'var(--white)'}">${h.name}</div>
+        </div>
+        <div>
+          <div class="dc-pts">${h.pts.toLocaleString()}</div>
+          <div class="dc-pts-lbl">pts</div>
+        </div>
+      </div>
+      <div class="dc-metrics">
+        <div class="metric">
+          <div class="metric-val conv-val">${h.conv}%</div>
+          <div class="metric-lbl">Conv</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val pipe-val">${fmtPipe(h.pipeline)}</div>
+          <div class="metric-lbl">Pipeline</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val att-val">${h.attempts}</div>
+          <div class="metric-lbl">Attempts</div>
+        </div>
+      </div>
+      <div class="dc-bar">
+        <div class="dc-bar-fill" style="width:${Math.round((h.pts/maxPts)*100)}%"></div>
+      </div>
+    </div>`).join('');
 }
 
-// ── VIEW SWITCHING ──
-let currentView = 'weekly';
+let currentView = 'rankings';
 function switchView(name, btn) {
-  document.querySelectorAll('.board-view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById(name+'-view').classList.add('active');
   if(btn) btn.classList.add('active');
@@ -454,15 +520,12 @@ function switchView(name, btn) {
   resetCycle();
 }
 
-// ── AUTO-CYCLE (15s) ──
 const CYCLE = 15;
 let cycleTimer, dotTimer, elapsed = 0;
-
 function buildDots() {
   const c = document.getElementById('countdown');
   c.innerHTML = Array.from({length:CYCLE},(_,i)=>`<div class="cd-dot" id="d${i}"></div>`).join('');
 }
-
 function resetCycle() {
   clearInterval(cycleTimer);
   clearInterval(dotTimer);
@@ -470,7 +533,6 @@ function resetCycle() {
   buildDots();
   startCycle();
 }
-
 function startCycle() {
   dotTimer = setInterval(()=>{
     const dot = document.getElementById('d'+elapsed);
@@ -478,18 +540,17 @@ function startCycle() {
     elapsed++;
     if(elapsed >= CYCLE) {
       clearInterval(dotTimer);
-      const next = currentView === 'weekly' ? 'ytd' : 'weekly';
+      const next = currentView === 'rankings' ? 'detail' : 'rankings';
       const btn = [...document.querySelectorAll('.toggle-btn')]
-        .find(b => b.textContent.toLowerCase().includes(next === 'weekly' ? 'week' : 'year'));
+        .find(b=>b.textContent.toLowerCase().includes(next==='rankings'?'rank':'detail'));
       switchView(next, btn);
     }
   }, 1000);
 }
 
-// ── INIT ──
 setWeek();
-renderBoard(weeklyData, 'weekly-podium', 'weekly-lower');
-renderBoard(ytdData,    'ytd-podium',    'ytd-lower');
+renderRankings();
+renderDetail();
 buildDots();
 startCycle();
 </script>
