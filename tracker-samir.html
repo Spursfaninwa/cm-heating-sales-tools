@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CM Heating — Samir Khoury Follow-Up Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f1f5f9;--white:#fff;--dark:#0f172a;--surface:#1e293b;
+  --orange:#f97316;--muted:#64748b;--border:#e2e8f0;
+  --green:#16a34a;--yellow:#d97706;--red:#dc2626;--blue:#0891b2;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--dark);padding:28px;font-size:14px;}
+.header{background:var(--surface);border-radius:12px;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+.header img{height:48px;}
+.header-mid h1{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:white;text-transform:uppercase;letter-spacing:2px;line-height:1;}
+.header-mid p{font-size:12px;color:#94a3b8;margin-top:4px;}
+.print-btn{padding:9px 18px;background:var(--orange);color:white;border:none;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.tile{background:white;border-radius:8px;border:1px solid var(--border);border-left:3px solid var(--orange);padding:14px;text-align:center;}
+.tile-val{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;color:var(--orange);line-height:1;}
+.tile-lbl{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-top:4px;}
+.filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.filter-btn{padding:7px 16px;border:1px solid var(--border);border-radius:6px;background:white;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .15s;}
+.filter-btn.active{background:var(--surface);color:white;border-color:var(--surface);}
+.lead-count{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600;align-self:center;}
+.leads{display:flex;flex-direction:column;gap:12px;}
+.lead-card{background:white;border-radius:10px;border:1px solid var(--border);border-left:4px solid #94a3b8;overflow:hidden;}
+.lead-card[data-urgency="fresh"]{border-left-color:var(--green);}
+.lead-card[data-urgency="warm"]{border-left-color:var(--yellow);}
+.lead-card[data-urgency="hot"]{border-left-color:var(--orange);}
+.lead-card[data-urgency="critical"]{border-left-color:var(--red);}
+.lead-card[data-urgency="dead"]{border-left-color:#1e293b;}
+.lead-header{display:flex;align-items:center;gap:12px;padding:14px 18px;}
+.urgency-bar{width:4px;height:40px;border-radius:2px;flex-shrink:0;}
+.urgency-fresh{background:var(--green);}
+.urgency-warm{background:var(--yellow);}
+.urgency-hot{background:var(--orange);}
+.urgency-critical{background:var(--red);}
+.urgency-dead{background:#1e293b;}
+.lead-name{flex:1;font-weight:700;font-size:15px;}
+.lead-days{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;min-width:56px;text-align:right;}
+.days-fresh{color:var(--green);}
+.days-warm{color:var(--yellow);}
+.days-hot{color:var(--orange);}
+.days-critical{color:var(--red);}
+.days-dead{color:#1e293b;}
+.days-lbl{font-size:10px;color:var(--muted);text-align:right;font-weight:600;}
+.lead-meta{display:flex;gap:16px;padding:0 18px 10px;flex-wrap:wrap;}
+.meta-item{font-size:12px;color:var(--muted);}
+.meta-item strong{color:var(--dark);font-weight:600;}
+.lead-actions{padding:12px 18px;border-top:1px solid var(--bg);display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;}
+.status-select{padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:'Barlow',sans-serif;background:white;color:var(--dark);}
+.notes-input{flex:1;min-width:200px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:'Barlow',sans-serif;resize:vertical;min-height:36px;}
+.save-btn{padding:7px 16px;background:var(--surface);color:white;border:none;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;}
+.save-btn:hover{background:var(--orange);}
+.st-banner{display:none;background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:8px 12px;margin:0 18px 12px;font-size:12px;color:#92400e;align-items:center;gap:10px;}
+.copy-btn{padding:4px 12px;background:#92400e;color:white;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.copy-btn.copied{background:var(--green);}
+.prior-section{border-top:1px solid var(--bg);}
+.prior-toggle{width:100%;padding:9px 18px;background:none;border:none;text-align:left;cursor:pointer;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:flex;align-items:center;gap:6px;}
+.prior-toggle:hover{color:var(--dark);}
+.prior-badge{background:var(--orange);color:white;font-size:10px;padding:1px 6px;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;}
+.prior-content{padding:10px 18px 14px;display:none;}
+.prior-entry{font-size:12px;color:var(--dark);line-height:1.6;padding:6px 0;border-bottom:1px solid #f8fafc;}
+.prior-entry:last-child{border-bottom:none;}
+.prior-entry .entry-time{font-size:11px;color:var(--muted);font-weight:600;}
+@media print{.print-btn,.filters,.lead-actions,.prior-toggle{display:none!important;}body{padding:16px;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <img src="https://cmheating.github.io/sales-tools/cm-logo.webp" alt="CM Heating">
+  <div class="header-mid">
+    <h1>Samir — Follow-Up Tracker</h1>
+    <p id="dateLabel"></p>
+  </div>
+  <button class="print-btn" onclick="window.print()">⎙ Print / PDF</button>
+</div>
+<div class="tiles">
+  <div class="tile"><div class="tile-val">65</div><div class="tile-lbl">Open Leads</div></div>
+  <div class="tile"><div class="tile-val">$1.0M</div><div class="tile-lbl">Pipeline Value</div></div>
+  <div class="tile"><div class="tile-val" style="color:var(--red)">46</div><div class="tile-lbl">Critical (21+ days)</div></div>
+  <div class="tile"><div class="tile-val">59</div><div class="tile-lbl">Avg Days Old</div></div>
+</div>
+<div class="filters">
+  <button class="filter-btn active" onclick="filterLeads('all',this)">All <span id="cnt-all"></span></button>
+  <button class="filter-btn" onclick="filterLeads('critical',this)">🔴 Critical 21+ <span id="cnt-critical"></span></button>
+  <button class="filter-btn" onclick="filterLeads('hot',this)">🟠 Hot 8–20d <span id="cnt-hot"></span></button>
+  <button class="filter-btn" onclick="filterLeads('fresh',this)">🟢 Fresh 0–7d <span id="cnt-fresh"></span></button>
+  <span class="lead-count" id="showingCount"></span>
+</div>
+<div class="leads" id="leadsContainer"></div>
+
+<script>
+const HCA = 'Samir';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkxXDMihnJL-iS-XiR0OxI6hbf_oZzHigHEAhbVGhhz1pCftMANai5OZuXDR9ooyQk/exec';
+const leads = [{"customer": "Karen Zimmerman", "address": "3204 176th Place Northeast, Arlington, WA 98223 USA", "phone": "(206) 787-0420", "estimate": "$0", "estimateRaw": 0, "daysOld": 143, "createdOn": "12/20/2025", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "01/01/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Cara Decarlow", "address": "20623 88th Avenue West, Edmonds, WA 98026 USA", "phone": "(541) 646-1445", "estimate": "$8K", "estimateRaw": 7949, "daysOld": 133, "createdOn": "12/30/2025", "status": "Contacted", "lastFollowUp": "01/22/2026", "nextFollowUp": "01/18/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Stacey Drimmer", "address": "1805 Village Green Drive ##5, Mill Creek, WA 98012 USA", "phone": "(206) 999-8639", "estimate": "$20K", "estimateRaw": 19810, "daysOld": 130, "createdOn": "01/02/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "01/04/2026", "followUps": 0, "priorNotes": ""}, {"customer": "David Carrell", "address": "727 33rd Avenue, Seattle, WA 98122 USA", "phone": "(206) 719-7340", "estimate": "$24K", "estimateRaw": 24121, "daysOld": 130, "createdOn": "01/02/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "01/07/2026", "followUps": 0, "priorNotes": ""}, {"customer": "David Carrell", "address": "15423 West Lake Goodwin Road, Stanwood, WA 98292 USA", "phone": "(206) 719-7340", "estimate": "$26K", "estimateRaw": 25950, "daysOld": 130, "createdOn": "01/02/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "01/04/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Cindy Croft", "address": "112 Paradise Parkway, Granite Falls, WA 98252 USA", "phone": "(425) 750-0351", "estimate": "$15K", "estimateRaw": 14784, "daysOld": 127, "createdOn": "01/05/2026", "status": "Contacted", "lastFollowUp": "02/02/2026", "nextFollowUp": "01/11/2026", "followUps": 2, "priorNotes": ""}, {"customer": "Pedro Rodriguez", "address": "24240 Northeast 172nd Street, Woodinville, WA 98077 USA", "phone": "(425) 207-6115", "estimate": "$16K", "estimateRaw": 15570, "daysOld": 125, "createdOn": "01/07/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "01/12/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Ty Charouhas", "address": "805 21st Place, Snohomish, WA 98290 USA", "phone": "(425) 686-0246", "estimate": "$17K", "estimateRaw": 17195, "daysOld": 120, "createdOn": "01/12/2026", "status": "Contacted", "lastFollowUp": "01/22/2026", "nextFollowUp": "01/15/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Julio and Alejandra Lozano", "address": "14756 27th Avenue Northeast, Shoreline, WA 98155 USA", "phone": "(206) 718-5141", "estimate": "$9K", "estimateRaw": 8738, "daysOld": 117, "createdOn": "01/15/2026", "status": "Contacted", "lastFollowUp": "01/22/2026", "nextFollowUp": "01/18/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Carol Pisani", "address": "22626 20th Avenue Southeast, Bothell, WA 98021 USA", "phone": "(425) 318-5165", "estimate": "$23K", "estimateRaw": 23480, "daysOld": 113, "createdOn": "01/19/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "01/26/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Ross Kulczyk", "address": "14927 Northeast 204th Street, Woodinville, WA 98072 USA", "phone": "(425) 941-1405", "estimate": "$19K", "estimateRaw": 18901, "daysOld": 112, "createdOn": "01/20/2026", "status": "Unreachable", "lastFollowUp": "02/01/2026", "nextFollowUp": "01/25/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Charles Clark", "address": "15921 138th Avenue Northeast, Arlington, WA 98223 USA", "phone": "(206) 557-9060", "estimate": "$22K", "estimateRaw": 22490, "daysOld": 111, "createdOn": "01/21/2026", "status": "Contacted", "lastFollowUp": "01/23/2026", "nextFollowUp": "01/23/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Sarah Nakatani", "address": "1109 Northeast 181st Place, Shoreline, WA 98155 USA", "phone": "(360) 821-1372", "estimate": "$7K", "estimateRaw": 7059, "daysOld": 110, "createdOn": "01/22/2026", "status": "Unreachable", "lastFollowUp": "02/01/2026", "nextFollowUp": "01/24/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Micha Indra", "address": "2819 103rd Avenue Southeast, Lake Stevens , WA 98290 USA", "phone": "(206) 406-3001", "estimate": "$8K", "estimateRaw": 7861, "daysOld": 109, "createdOn": "01/23/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "01/25/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Gillian Muenow", "address": "17211 4th Drive Southeast, Bothell, WA 98012 USA", "phone": "(843) 412-1043", "estimate": "$18K", "estimateRaw": 17835, "daysOld": 106, "createdOn": "01/26/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "01/29/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Chris Jensen", "address": "5920 176th Street Southwest, Lynnwood, WA 98037 USA", "phone": "(425) 530-9547", "estimate": "$7K", "estimateRaw": 6582, "daysOld": 106, "createdOn": "01/26/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "02/02/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Kyungmee Chu", "address": "12107 Northeast Bel Red Road #APT C302, Bellevue, WA 98005 USA", "phone": "(206) 375-5959", "estimate": "$6K", "estimateRaw": 5800, "daysOld": 105, "createdOn": "01/27/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "02/01/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Wayne Lierman", "address": "808 8th Street, Snohomish, WA 98290 USA", "phone": "(206) 949-2615", "estimate": "$19K", "estimateRaw": 18657, "daysOld": 104, "createdOn": "01/28/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "02/05/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Jarad Felker", "address": "7806 Olympic View Drive, Edmonds, WA 98026 USA", "phone": "(206) 660-0597", "estimate": "$8K", "estimateRaw": 7613, "daysOld": 103, "createdOn": "01/29/2026", "status": "Contacted", "lastFollowUp": "02/01/2026", "nextFollowUp": "01/31/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Lilian Buscher", "address": "7239 130th Avenue Northeast, Kirkland, WA 98033 USA", "phone": "(206) 755-3222", "estimate": "$25K", "estimateRaw": 25268, "daysOld": 103, "createdOn": "01/29/2026", "status": "Contacted", "lastFollowUp": "02/05/2026", "nextFollowUp": "02/01/2026", "followUps": 2, "priorNotes": ""}, {"customer": "Craig Williamson", "address": "23426 9th Place West, Bothell, WA 98021 USA", "phone": "(206) 595-9652", "estimate": "$12K", "estimateRaw": 12209, "daysOld": 98, "createdOn": "02/03/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "02/08/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Bob Bagley", "address": "11231 137th Avenue Northeast, Lake Stevens, WA 98258 USA", "phone": "(425) 478-2926", "estimate": "$24K", "estimateRaw": 23619, "daysOld": 98, "createdOn": "02/03/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "02/08/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Tyler Perron", "address": "2609 Soper Hill Road, Lake Stevens, WA 98258 USA", "phone": "(425) 343-5691", "estimate": "$15K", "estimateRaw": 15385, "daysOld": 95, "createdOn": "02/06/2026", "status": "Contacted", "lastFollowUp": "02/18/2026", "nextFollowUp": "02/14/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Stephanie and Marcel Beauchamp", "address": "8316 Northeast 143rd Street, Kirkland, WA 98034 USA", "phone": "(206) 999-9823", "estimate": "$15K", "estimateRaw": 14507, "daysOld": 91, "createdOn": "02/10/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "02/13/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Wagu Mengesha", "address": "5008 136th Place Northeast, Marysville, WA 98271 USA", "phone": "(425) 737-1153", "estimate": "$14K", "estimateRaw": 14222, "daysOld": 90, "createdOn": "02/11/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "02/14/2026", "followUps": 0, "priorNotes": ""}, {"customer": "William Fairchild", "address": "130 Pleasant Lane, Camano, WA 98282 USA", "phone": "(425) 736-0354", "estimate": "$7K", "estimateRaw": 7445, "daysOld": 89, "createdOn": "02/12/2026", "status": "Contacted", "lastFollowUp": "02/18/2026", "nextFollowUp": "02/15/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Samantha Martin", "address": "19415 61st Avenue Northeast, Kenmore, WA 98028 USA", "phone": "(425) 773-4562", "estimate": "$15K", "estimateRaw": 14646, "daysOld": 87, "createdOn": "02/14/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "02/21/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Roberto Pena and Carolina", "address": "513 95th Court Southeast, Everett, WA 98208 USA", "phone": "(425) 236-7269", "estimate": "$2K", "estimateRaw": 1663, "daysOld": 83, "createdOn": "02/18/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "02/20/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Alok Dhamanaskar", "address": "8223 20th Avenue Northeast, Seattle, WA 98115 USA", "phone": "(706) 351-4950", "estimate": "$27K", "estimateRaw": 26731, "daysOld": 51, "createdOn": "03/22/2026", "status": "Unreachable", "lastFollowUp": "04/08/2026", "nextFollowUp": "03/29/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Gayle Turner", "address": "23029 83rd Avenue West, Edmonds, WA 98026 USA", "phone": "(828) 773-0072", "estimate": "$17K", "estimateRaw": 16926, "daysOld": 48, "createdOn": "03/25/2026", "status": "Unreachable", "lastFollowUp": "04/07/2026", "nextFollowUp": "03/30/2026", "followUps": 2, "priorNotes": "Said she's not ready right now."}, {"customer": "Ethan Gahr", "address": "3902 184th Place Southwest, Lynnwood, WA 98037 USA", "phone": "(425) 299-8719", "estimate": "$17K", "estimateRaw": 17074, "daysOld": 46, "createdOn": "03/27/2026", "status": "Unreachable", "lastFollowUp": "04/01/2026", "nextFollowUp": "03/29/2026", "followUps": 1, "priorNotes": "Not responding to voice or text."}, {"customer": "William Hamner", "address": "5534 30th Avenue Northeast, Seattle, WA 98105 USA", "phone": "(206) 491-0945", "estimate": "$25K", "estimateRaw": 24987, "daysOld": 44, "createdOn": "03/29/2026", "status": "Contacted", "lastFollowUp": "04/08/2026", "nextFollowUp": "04/02/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Beth Gallagher", "address": "14145 83rd Place Northeast, Kirkland, WA 98034 USA", "phone": "(425) 765-4787", "estimate": "$18K", "estimateRaw": 18276, "daysOld": 41, "createdOn": "04/01/2026", "status": "Unreachable", "lastFollowUp": "04/07/2026", "nextFollowUp": "04/03/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Emir Grcic", "address": "7012 191st Place Southwest, Lynnwood, WA 98036 USA", "phone": "(425) 591-9556", "estimate": "$0", "estimateRaw": 0, "daysOld": 39, "createdOn": "04/03/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "04/05/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Krystal Tonning", "address": "4414 211th Street Southwest, Lynnwood, WA 98036 USA", "phone": "(206) 769-5879", "estimate": "$15K", "estimateRaw": 14644, "daysOld": 33, "createdOn": "04/09/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "04/12/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Karen Pena", "address": "3226 178th Place Southwest, Lynnwood, WA 98037 USA", "phone": "(425) 501-5842", "estimate": "$8K", "estimateRaw": 7842, "daysOld": 33, "createdOn": "04/09/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "04/13/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Giti Sarkhosh", "address": "15600 Ash Way, Lynnwood, WA 98087 USA", "phone": "(425) 244-4979", "estimate": "$12K", "estimateRaw": 12058, "daysOld": 31, "createdOn": "04/11/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "04/13/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Steven Ramuta", "address": "5220 Monticello Drive, Edmonds, WA 98026 USA", "phone": "(425) 218-1884", "estimate": "$25K", "estimateRaw": 24878, "daysOld": 29, "createdOn": "04/13/2026", "status": "Unreachable", "lastFollowUp": "04/21/2026", "nextFollowUp": "04/16/2026", "followUps": 2, "priorNotes": ""}, {"customer": "Andre LaMarre", "address": "20403 Northeast 176th Place, Woodinville, WA 98077 USA", "phone": "(425) 923-8286", "estimate": "$15K", "estimateRaw": 15184, "daysOld": 28, "createdOn": "04/14/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "04/16/2026", "followUps": 0, "priorNotes": ""}, {"customer": "John Rice", "address": "428 Pitner Drive, Lynnwood, WA 98087 USA", "phone": "(580) 917-9285", "estimate": "$14K", "estimateRaw": 14157, "daysOld": 27, "createdOn": "04/15/2026", "status": "Unreachable", "lastFollowUp": "04/21/2026", "nextFollowUp": "04/17/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Elaine Moore", "address": "7701 Hardeson Road #71, Everett, WA 98203 USA", "phone": "(425) 501-6507", "estimate": "$8K", "estimateRaw": 7728, "daysOld": 26, "createdOn": "04/16/2026", "status": "Contacted", "lastFollowUp": "04/21/2026", "nextFollowUp": "04/18/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Mark Pierce", "address": "19514 62nd Avenue Northeast, Kenmore, WA 98028 USA", "phone": "(206) 251-3748", "estimate": "$27K", "estimateRaw": 26827, "daysOld": 26, "createdOn": "04/16/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "04/19/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Greg Sckorohod", "address": "6006 128th Avenue Northeast, Kirkland, WA 98033 USA", "phone": "(206) 383-1437", "estimate": "$13K", "estimateRaw": 13163, "daysOld": 25, "createdOn": "04/17/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "04/19/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Marina Bogdeva", "address": "9318 228th Way Northeast, Redmond, WA 98053 USA", "phone": "(425) 417-1991", "estimate": "$17K", "estimateRaw": 17182, "daysOld": 25, "createdOn": "04/17/2026", "status": "Unreachable", "lastFollowUp": "04/21/2026", "nextFollowUp": "04/20/2026", "followUps": 1, "priorNotes": ""}, {"customer": "Kevin Quaid", "address": "8029 19th Avenue Northeast, Seattle, WA 98115 USA", "phone": "(206) 369-1992", "estimate": "$24K", "estimateRaw": 24082, "daysOld": 22, "createdOn": "04/20/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "04/24/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Abhi  Devurkar", "address": "10815 132nd Avenue Northeast, Kirkland, WA 98033 USA", "phone": "(919) 945-4862", "estimate": "$15K", "estimateRaw": 14600, "daysOld": 21, "createdOn": "04/21/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/04/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Patil Vivek", "address": "2624 197th Place Southwest #B, Lynnwood, WA 98036 USA", "phone": "(213) 327-7984", "estimate": "$14K", "estimateRaw": 13592, "daysOld": 20, "createdOn": "04/22/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/11/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Haney Labib", "address": "300 142nd Street Southwest, Everett, WA 98208 USA", "phone": "(425) 239-8729", "estimate": "$19K", "estimateRaw": 19488, "daysOld": 18, "createdOn": "04/24/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "04/26/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Drew Hunnicutt", "address": "6122 144th Street Southwest, Edmonds, WA 98026 USA", "phone": "(206) 458-3083", "estimate": "$18K", "estimateRaw": 18163, "daysOld": 18, "createdOn": "04/24/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "04/27/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Dimitri James", "address": "4423 181st Place Southwest, Lynnwood, WA 98037 USA", "phone": "(765) 426-0681", "estimate": "$27K", "estimateRaw": 26803, "daysOld": 15, "createdOn": "04/27/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/03/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Nav Kaul", "address": "1320 Northeast 68th Street, Seattle, WA 98115 USA", "phone": "(512) 658-7424", "estimate": "$17K", "estimateRaw": 16717, "daysOld": 15, "createdOn": "04/27/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "04/30/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Tony L Ma", "address": "6029 45th Avenue Northeast, Seattle, WA 98115 USA", "phone": "(206) 930-6414", "estimate": "$18K", "estimateRaw": 17678, "daysOld": 14, "createdOn": "04/28/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/03/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Bethany Zolikoff", "address": "3420 Sunnyside Boulevard, Marysville, WA 98270 USA", "phone": "(425) 442-1693", "estimate": "$24K", "estimateRaw": 23740, "daysOld": 12, "createdOn": "04/30/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/03/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Ankit Jain", "address": "15115 25th Avenue West, Lynnwood, WA 98087 USA", "phone": "(206) 822-8019", "estimate": "$15K", "estimateRaw": 14862, "daysOld": 11, "createdOn": "05/01/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/04/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Brad Diemert", "address": "6210 189th Place Southwest, Lynnwood, WA 98036 USA", "phone": "(206) 466-8184", "estimate": "$8K", "estimateRaw": 7607, "daysOld": 11, "createdOn": "05/01/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/03/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Reza Asadi", "address": "10616 NE 116th St, Kirkland, WA 98034 USA", "phone": "(425) 588-9565", "estimate": "$18K", "estimateRaw": 18071, "daysOld": 10, "createdOn": "05/02/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/04/2026", "followUps": 0, "priorNotes": ""}, {"customer": "MIke Ballou", "address": "7027 114th Avenue Northeast, Lake Stevens, WA 98258 USA", "phone": "(425) 512-5188", "estimate": "$19K", "estimateRaw": 19201, "daysOld": 8, "createdOn": "05/04/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/07/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Joshua Gonzales", "address": "17264 Greenwood Place North, Shoreline, WA 98133 USA", "phone": "(206) 605-8707", "estimate": "$17K", "estimateRaw": 17110, "daysOld": 8, "createdOn": "05/04/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/08/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Stacie Flick", "address": "1706 144th Place Southeast, Mill Creek, WA 98012 USA", "phone": "(513) 307-5993", "estimate": "$16K", "estimateRaw": 16334, "daysOld": 8, "createdOn": "05/04/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/10/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Jenny Wang", "address": "14021 35th Avenue Northeast, Seattle, WA 98125 USA", "phone": "(612) 300-5152", "estimate": "$7K", "estimateRaw": 6538, "daysOld": 7, "createdOn": "05/05/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/09/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Emily Kane", "address": "17825 Spruce Way, Lynnwood, WA 98037 USA", "phone": "(206) 883-4856", "estimate": "$7K", "estimateRaw": 6731, "daysOld": 7, "createdOn": "05/05/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/10/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Jared Rockafellow", "address": "3631 121st Street Northeast, Marysville, WA 98271 USA", "phone": "(425) 346-6904", "estimate": "$18K", "estimateRaw": 17877, "daysOld": 6, "createdOn": "05/06/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/08/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Charles Burns", "address": "18109 69th Place West, Edmonds, WA 98026 USA", "phone": "(206) 940-4364", "estimate": "$15K", "estimateRaw": 15349, "daysOld": 5, "createdOn": "05/07/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/09/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Rad Iyyagari", "address": "3260 140th Avenue Northeast, Bellevue, WA 98005 USA", "phone": "(206) 579-7553", "estimate": "$49K", "estimateRaw": 48889, "daysOld": 5, "createdOn": "05/07/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/10/2026", "followUps": 0, "priorNotes": ""}, {"customer": "Malak Modares", "address": "1822 234th Place Southwest, Bothell, WA 98021 USA", "phone": "(336) 935-9583", "estimate": "$0", "estimateRaw": 0, "daysOld": 1, "createdOn": "05/11/2026", "status": "NotAttempted", "lastFollowUp": "Never", "nextFollowUp": "05/14/2026", "followUps": 0, "priorNotes": ""}];
+
+function urgencyClass(d){
+  if(d<=3) return 'fresh';
+  if(d<=7) return 'warm';
+  if(d<=20) return 'hot';
+  if(d<=30) return 'critical';
+  return 'dead';
+}
+
+document.getElementById('dateLabel').textContent =
+  'Week of ' + new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+// Count filters
+function updateCounts(){
+  document.getElementById('cnt-all').textContent = '('+leads.length+')';
+  document.getElementById('cnt-critical').textContent = '('+leads.filter(l=>l.daysOld>=21).length+')';
+  document.getElementById('cnt-hot').textContent = '('+leads.filter(l=>l.daysOld>=8&&l.daysOld<=20).length+')';
+  document.getElementById('cnt-fresh').textContent = '('+leads.filter(l=>l.daysOld<=7).length+')';
+}
+
+function renderLeads(filtered){
+  const container = document.getElementById('leadsContainer');
+  container.innerHTML = '';
+  document.getElementById('showingCount').textContent = 'Showing '+filtered.length+' of '+leads.length;
+  filtered.forEach((lead,idx)=>{
+    const urg = urgencyClass(lead.daysOld);
+    const hasPrior = lead.priorNotes && lead.priorNotes.trim().length > 0;
+    const priorHtml = hasPrior
+      ? `<div class="prior-section">
+           <button class="prior-toggle" onclick="togglePrior(${idx})">
+             ▶ Prior Notes <span class="prior-badge" id="badge-${idx}">1</span>
+           </button>
+           <div class="prior-content" id="prior-${idx}">
+             <div class="prior-entry"><div class="entry-time">ServiceTitan history</div>${lead.priorNotes}</div>
+           </div>
+         </div>`
+      : '';
+
+    const nfuHtml = lead.nextFollowUp
+      ? `<div class="meta-item">📅 Next F/U: <strong>${lead.nextFollowUp}</strong></div>` : '';
+
+    container.innerHTML += `
+      <div class="lead-card" data-urgency="${urg}" data-idx="${idx}" id="card-${idx}">
+        <div class="lead-header">
+          <div class="urgency-bar urgency-${urg}"></div>
+          <div class="lead-name">${lead.customer}</div>
+          <div>
+            <div class="lead-days days-${urg}">${lead.daysOld}d</div>
+            <div class="days-lbl">days old</div>
+          </div>
+        </div>
+        <div class="lead-meta">
+          <div class="meta-item">💰 <strong>${lead.estimate}</strong></div>
+          <div class="meta-item">📞 <strong>${lead.phone}</strong></div>
+          <div class="meta-item">📍 ${lead.address}</div>
+          <div class="meta-item">Status: <strong>${lead.status}</strong></div>
+          <div class="meta-item">Last F/U: <strong>${lead.lastFollowUp}</strong></div>
+          ${nfuHtml}
+          <div class="meta-item">Attempts: <strong>${lead.followUps}</strong></div>
+          <div class="meta-item">Created: <strong>${lead.createdOn}</strong></div>
+        </div>
+        <div class="lead-actions">
+          <select class="status-select" id="status-${idx}">
+            <option value="Contacted" ${lead.status==='Contacted'?'selected':''}>Contacted</option>
+            <option value="Unreachable" ${lead.status==='Unreachable'?'selected':''}>Unreachable</option>
+            <option value="NotAttempted" ${lead.status==='NotAttempted'?'selected':''}>Not Attempted</option>
+            <option value="Dismissed">Dismissed</option>
+            <option value="Sold">✓ Sold</option>
+          </select>
+          <textarea class="notes-input" id="notes-${idx}" placeholder="What happened? (required to save)"></textarea>
+          <button class="save-btn" onclick="saveFollowUp(${idx})">Log Follow-Up</button>
+        </div>
+        <div class="st-banner" id="banner-${idx}">
+          <span>📋 Paste into ServiceTitan:</span>
+          <span id="banner-text-${idx}" style="flex:1;font-weight:600;"></span>
+          <button class="copy-btn" id="copy-btn-${idx}" onclick="copyNote(${idx})">Copy</button>
+        </div>
+        ${priorHtml}
+      </div>`;
+  });
+}
+
+function filterLeads(type, btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  let filtered;
+  if(type==='all') filtered = leads;
+  else if(type==='critical') filtered = leads.filter(l=>l.daysOld>=21);
+  else if(type==='hot') filtered = leads.filter(l=>l.daysOld>=8&&l.daysOld<=20);
+  else if(type==='fresh') filtered = leads.filter(l=>l.daysOld<=7);
+  renderLeads(filtered);
+}
+
+function togglePrior(idx){
+  const el = document.getElementById('prior-'+idx);
+  const btn = el.previousElementSibling;
+  if(el.style.display==='block'){
+    el.style.display='none'; btn.textContent=btn.textContent.replace('▼','▶');
+  } else {
+    el.style.display='block'; btn.innerHTML=btn.innerHTML.replace('▶','▼');
+  }
+}
+
+function saveFollowUp(idx){
+  const lead = leads[idx];
+  const status = document.getElementById('status-'+idx).value;
+  const notes = document.getElementById('notes-'+idx).value.trim();
+  if(!notes){ alert('Please enter notes before saving.'); return; }
+
+  const now = new Date();
+  const ts = now.toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'})
+    + ', ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const noteText = '['+ts+'] Status: '+status+' | '+notes;
+
+  const btn = document.querySelector('#card-'+idx+' .save-btn');
+  btn.textContent = 'Saving...'; btn.disabled = true;
+
+  const params = new URLSearchParams({
+    customer: lead.customer, status, notes: noteText, hca: HCA
+  });
+
+  fetch(SCRIPT_URL+'?'+params.toString())
+    .then(()=>{
+      btn.textContent = '✓ Saved!'; btn.style.background = 'var(--green)';
+      // ST banner
+      const banner = document.getElementById('banner-'+idx);
+      document.getElementById('banner-text-'+idx).textContent = noteText;
+      banner.style.display = 'flex';
+      // Prepend to prior notes
+      const priorEl = document.getElementById('prior-'+idx);
+      if(priorEl){
+        priorEl.innerHTML = '<div class="prior-entry"><div class="entry-time">'+ts+'</div>'+notes+'</div>' + priorEl.innerHTML;
+        priorEl.style.display = 'block';
+      } else {
+        const card = document.getElementById('card-'+idx);
+        const priorSection = document.createElement('div');
+        priorSection.className = 'prior-section';
+        priorSection.innerHTML = `<button class="prior-toggle" onclick="togglePrior(${idx})">▼ Prior Notes <span class="prior-badge" id="badge-${idx}">1</span></button>
+          <div class="prior-content" id="prior-${idx}" style="display:block"><div class="prior-entry"><div class="entry-time">${ts}</div>${notes}</div></div>`;
+        card.appendChild(priorSection);
+      }
+      document.getElementById('notes-'+idx).value = '';
+      setTimeout(()=>{ btn.textContent='Log Follow-Up'; btn.style.background=''; btn.disabled=false; }, 3000);
+    })
+    .catch(()=>{
+      btn.textContent='Error — Retry'; btn.style.background='var(--red)'; btn.disabled=false;
+    });
+}
+
+function copyNote(idx){
+  const text = document.getElementById('banner-text-'+idx).textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.getElementById('copy-btn-'+idx);
+    btn.textContent='✓ Copied!'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('copied'); }, 2500);
+  });
+}
+
+updateCounts();
+renderLeads(leads);
+</script>
+</body>
+</html>
