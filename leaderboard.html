@@ -6,520 +6,202 @@
 <title>CM Heating — Follow-Up Leaderboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0a0f1a;
-  --surface: #111827;
-  --surface2: #1a2336;
-  --orange: #f97316;
-  --gold: #fbbf24;
-  --silver: #94a3b8;
-  --bronze: #cd7c2f;
-  --white: #f8fafc;
-  --muted: #64748b;
-  --green: #22c55e;
-  --blue: #38bdf8;
-  --pink: #f472b6;
+:root{
+  --bg:#0a0f1a;--surface:#111827;--surface2:#1a2336;
+  --orange:#f97316;--gold:#fbbf24;--silver:#94a3b8;--bronze:#cd7c2f;
+  --white:#f8fafc;--muted:#64748b;--green:#22c55e;--blue:#38bdf8;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  font-family: 'Barlow', sans-serif;
-  background: var(--bg);
-  color: var(--white);
-  height: 100vh;
-  overflow: hidden;
-}
-body::before {
-  content:'';
-  position:fixed;
-  inset:0;
-  background-image:
-    linear-gradient(rgba(249,115,22,0.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(249,115,22,0.04) 1px,transparent 1px);
-  background-size:60px 60px;
-  pointer-events:none;
-}
-.app {
-  display:flex;
-  flex-direction:column;
-  height:100vh;
-  padding:20px 36px 16px;
-  gap:16px;
-}
-.header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-shrink:0;
-}
-.header-left { display:flex; align-items:center; gap:20px; }
-.logo-area img { height:52px; width:auto; }
-.title h1 {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:34px;
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:3px;
-  line-height:1;
-}
-.title .week {
-  font-size:12px;
-  color:var(--muted);
-  font-weight:600;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-  margin-top:4px;
-}
-.header-right { display:flex; align-items:center; gap:16px; }
-.live-badge {
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:11px;
-  font-weight:700;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  color:var(--muted);
-}
-.live-dot {
-  width:8px; height:8px;
-  border-radius:50%;
-  background:var(--green);
-  box-shadow:0 0 10px var(--green);
-  animation:blink 2s infinite;
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.toggle {
-  display:flex;
-  background:var(--surface);
-  border-radius:8px;
-  padding:4px;
-  gap:4px;
-}
-.toggle-btn {
-  padding:8px 22px;
-  border:none;
-  border-radius:6px;
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:13px;
-  font-weight:800;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-  cursor:pointer;
-  transition:all 0.2s;
-  background:transparent;
-  color:var(--muted);
-}
-.toggle-btn.active {
-  background:var(--orange);
-  color:white;
-}
-.view { display:none; flex:1; overflow:hidden; }
-.view.active { display:flex; }
-#rankings-view { flex-direction:row; gap:20px; }
-.left-col { flex:1.3; display:flex; flex-direction:column; gap:10px; }
-.right-col { flex:1; display:flex; flex-direction:column; gap:8px; justify-content:center; }
-.rank-1-card {
-  background:linear-gradient(135deg, rgba(251,191,36,0.1), rgba(249,115,22,0.06));
-  border:1px solid rgba(251,191,36,0.25);
-  border-radius:12px;
-  padding:22px 28px;
-  display:flex;
-  align-items:center;
-  gap:20px;
-  position:relative;
-  overflow:hidden;
-  animation:slideRight 0.5s ease both;
-}
-.rank-1-card::before {
-  content:'';
-  position:absolute;
-  top:0;left:0;right:0;
-  height:3px;
-  background:linear-gradient(90deg,var(--gold),var(--orange));
-}
-.rank-2-card, .rank-3-card {
-  background:var(--surface);
-  border:1px solid var(--surface2);
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-  gap:20px;
-  padding:16px 24px;
-  animation:slideRight 0.5s ease both;
-}
-.rank-2-card { animation-delay:0.1s; }
-.rank-3-card { animation-delay:0.2s; }
-@keyframes slideRight {
-  from { opacity:0; transform:translateX(-24px); }
-  to   { opacity:1; transform:translateX(0); }
-}
-.crown { font-size:32px; animation:float 3s ease-in-out infinite; }
-@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
-.medal {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:44px;
-  font-weight:900;
-  min-width:56px;
-  text-align:center;
-  line-height:1;
-}
-.rank-2-card .medal { color:var(--silver); }
-.rank-3-card .medal { color:var(--bronze); }
-.card-info { flex:1; }
-.card-name {
-  font-family:'Barlow Condensed',sans-serif;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  line-height:1;
-}
-.rank-1-card .card-name { font-size:40px; }
-.rank-2-card .card-name, .rank-3-card .card-name { font-size:30px; }
-.card-stats {
-  display:flex;
-  gap:18px;
-  margin-top:6px;
-}
-.card-stat {
-  font-size:12px;
-  color:var(--muted);
-  font-weight:500;
-}
-.card-stat strong { color:var(--white); font-weight:700; }
-.card-pts {
-  font-family:'Barlow Condensed',sans-serif;
-  font-weight:900;
-  line-height:1;
-  text-align:right;
-}
-.rank-1-card .card-pts { font-size:56px; color:var(--gold); }
-.rank-2-card .card-pts, .rank-3-card .card-pts { font-size:42px; color:var(--silver); }
-.rank-3-card .card-pts { color:var(--bronze); }
-.pts-lbl {
-  font-size:11px;
-  color:var(--muted);
-  letter-spacing:1px;
-  text-transform:uppercase;
-  text-align:right;
-  margin-top:2px;
-  font-weight:600;
-}
-.rank-row {
-  background:var(--surface);
-  border:1px solid var(--surface2);
-  border-radius:8px;
-  padding:12px 20px;
-  display:flex;
-  align-items:center;
-  gap:16px;
-  animation:slideRight 0.4s ease both;
-}
-.row-num {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:20px; font-weight:700;
-  color:var(--muted);
-  min-width:28px;
-  text-align:center;
-}
-.row-name {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:22px; font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
-  flex:1;
-}
-.row-bar-wrap {
-  flex:2;
-  height:6px;
-  background:var(--surface2);
-  border-radius:3px;
-  overflow:hidden;
-}
-.row-bar {
-  height:100%;
-  border-radius:3px;
-  background:var(--orange);
-}
-.row-pts {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:22px; font-weight:800;
-  color:var(--orange);
-  min-width:80px;
-  text-align:right;
-}
-#detail-view.active {
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  grid-template-rows:repeat(3,1fr);
-  gap:12px;
-}
-.hca-card {
-  background:var(--surface);
-  border:1px solid var(--surface2);
-  border-radius:12px;
-  padding:18px 20px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  animation:fadeUp 0.4s ease both;
-  position:relative;
-  overflow:hidden;
-}
-.hca-card.top-card {
-  border-color:rgba(251,191,36,0.3);
-  background:linear-gradient(135deg,rgba(251,191,36,0.07),var(--surface));
-}
-.hca-card.top-card::before {
-  content:'';
-  position:absolute;
-  top:0;left:0;right:0;
-  height:2px;
-  background:linear-gradient(90deg,var(--gold),var(--orange));
-}
-@keyframes fadeUp {
-  from{opacity:0;transform:translateY(12px)}
-  to{opacity:1;transform:translateY(0)}
-}
-.hca-card:nth-child(1){animation-delay:0.05s}
-.hca-card:nth-child(2){animation-delay:0.1s}
-.hca-card:nth-child(3){animation-delay:0.15s}
-.hca-card:nth-child(4){animation-delay:0.2s}
-.hca-card:nth-child(5){animation-delay:0.25s}
-.hca-card:nth-child(6){animation-delay:0.3s}
-.hca-card:nth-child(7){animation-delay:0.35s}
-.hca-card:nth-child(8){animation-delay:0.4s}
-.hca-card:nth-child(9){animation-delay:0.45s}
-.dc-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-}
-.dc-rank {
-  font-size:12px;
-  color:var(--muted);
-  font-weight:700;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  margin-bottom:2px;
-}
-.dc-name {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:26px; font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:1px;
-}
-.dc-pts {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:38px; font-weight:900;
-  color:var(--orange);
-  line-height:1;
-  text-align:right;
-}
-.dc-pts-lbl {
-  font-size:10px;
-  color:var(--muted);
-  letter-spacing:1px;
-  text-transform:uppercase;
-  text-align:right;
-  font-weight:600;
-}
-.dc-metrics {
-  display:flex;
-  gap:8px;
-}
-.metric {
-  flex:1;
-  background:var(--surface2);
-  border-radius:6px;
-  padding:8px 6px;
-  text-align:center;
-}
-.metric-val {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:22px; font-weight:800;
-  line-height:1;
-}
-.metric-lbl {
-  font-size:10px;
-  color:var(--muted);
-  font-weight:500;
-  margin-top:2px;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
-}
-.conv-val { color:var(--green); }
-.pipe-val { color:var(--blue); }
-.att-val  { color:var(--orange); }
-.dc-bar { height:3px; background:var(--surface2); border-radius:2px; overflow:hidden; }
-.dc-bar-fill {
-  height:100%;
-  border-radius:2px;
-  background:linear-gradient(90deg,var(--orange),var(--gold));
-}
-.countdown {
-  position:fixed;
-  bottom:14px;
-  right:24px;
-  display:flex;
-  gap:4px;
-  align-items:center;
-}
-.cd-dot {
-  width:6px; height:6px;
-  border-radius:50%;
-  background:var(--surface2);
-  transition:background 0.3s;
-}
-.cd-dot.on { background:var(--orange); }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--white);height:100vh;overflow:hidden;}
+body::before{content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(249,115,22,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(249,115,22,.04) 1px,transparent 1px);
+  background-size:60px 60px;pointer-events:none;}
+.app{display:flex;flex-direction:column;height:100vh;padding:18px 32px 14px;gap:14px;}
+
+/* HEADER */
+.header{display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.header-left{display:flex;align-items:center;gap:18px;}
+.header-left img{height:48px;}
+.title h1{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:3px;line-height:1;}
+.title .sub{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;}
+.header-right{display:flex;align-items:center;gap:14px;}
+.live-badge{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.toggle{display:flex;background:var(--surface);border-radius:8px;padding:4px;gap:4px;}
+.toggle-btn{padding:7px 20px;border:none;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;background:transparent;color:var(--muted);}
+.toggle-btn.active{background:var(--orange);color:white;}
+
+/* VIEWS */
+.view{display:none;flex:1;overflow:hidden;}
+.view.active{display:flex;}
+.board-view{flex-direction:row;gap:18px;}
+.left-col{flex:1.3;display:flex;flex-direction:column;gap:10px;}
+.right-col{flex:1;display:flex;flex-direction:column;gap:7px;justify-content:center;}
+
+/* VIEW LABEL */
+.view-label{position:absolute;top:90px;right:36px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+
+/* TOP 3 */
+.rank-1{background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(249,115,22,.06));border:1px solid rgba(251,191,36,.25);border-radius:12px;padding:20px 26px;display:flex;align-items:center;gap:18px;position:relative;overflow:hidden;animation:slideR .5s ease both;}
+.rank-1::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--orange));}
+.rank-2,.rank-3{background:var(--surface);border:1px solid var(--surface2);border-radius:12px;display:flex;align-items:center;gap:18px;padding:14px 22px;animation:slideR .5s ease both;}
+.rank-2{animation-delay:.1s;}.rank-3{animation-delay:.2s;}
+@keyframes slideR{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+.crown{font-size:30px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.medal{font-family:'Barlow Condensed',sans-serif;font-size:42px;font-weight:900;min-width:52px;text-align:center;line-height:1;}
+.rank-2 .medal{color:var(--silver);}.rank-3 .medal{color:var(--bronze);}
+.card-info{flex:1;}
+.card-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:1px;line-height:1;}
+.rank-1 .card-name{font-size:38px;}.rank-2 .card-name,.rank-3 .card-name{font-size:28px;}
+.card-stats{display:flex;gap:16px;margin-top:5px;}
+.card-stat{font-size:12px;color:var(--muted);font-weight:500;}
+.card-stat strong{color:var(--white);font-weight:700;}
+.card-pts{font-family:'Barlow Condensed',sans-serif;font-weight:900;line-height:1;text-align:right;}
+.rank-1 .card-pts{font-size:52px;color:var(--gold);}
+.rank-2 .card-pts{font-size:40px;color:var(--silver);}.rank-3 .card-pts{font-size:40px;color:var(--bronze);}
+.pts-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;text-align:right;margin-top:2px;font-weight:600;}
+
+/* ROWS 4-9 */
+.rank-row{background:var(--surface);border:1px solid var(--surface2);border-radius:8px;padding:10px 18px;display:flex;align-items:center;gap:14px;animation:slideR .4s ease both;}
+.row-num{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--muted);min-width:26px;text-align:center;}
+.row-name{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex:1;}
+.row-stats{display:flex;gap:12px;}
+.row-stat{font-size:11px;color:var(--muted);}
+.row-stat strong{color:var(--white);}
+.row-bar-wrap{flex:1.5;height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+.row-bar{height:100%;border-radius:3px;background:var(--orange);}
+.row-pts{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--orange);min-width:70px;text-align:right;}
+
+/* SCORING NOTE */
+.scoring-note{flex-shrink:0;text-align:center;font-size:10px;color:var(--muted);letter-spacing:.5px;padding-top:4px;}
+
+/* COUNTDOWN */
+.countdown{position:fixed;bottom:12px;right:22px;display:flex;gap:4px;align-items:center;}
+.cd-dot{width:6px;height:6px;border-radius:50%;background:var(--surface2);transition:background .3s;}
+.cd-dot.on{background:var(--orange);}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
     <div class="header-left">
-      <div class="logo-area">
-        <img src="https://cmheating.github.io/sales-tools/cm-logo.webp" alt="CM Heating">
-      </div>
+      <img src="https://cmheating.github.io/sales-tools/cm-logo.webp" alt="CM Heating">
       <div class="title">
         <h1>Follow-Up Leaderboard</h1>
-        <div class="week" id="weekLabel"></div>
+        <div class="sub" id="subLabel"></div>
       </div>
     </div>
     <div class="header-right">
       <div class="live-badge"><div class="live-dot"></div>Live</div>
       <div class="toggle">
-        <button class="toggle-btn active" onclick="switchView('rankings',this)">Rankings</button>
-        <button class="toggle-btn" onclick="switchView('detail',this)">Detail</button>
+        <button class="toggle-btn active" onclick="switchView('ytd',this)">YTD Total</button>
+        <button class="toggle-btn" onclick="switchView('rolling90',this)">Rolling 90-Day</button>
       </div>
     </div>
   </div>
 
-  <div id="rankings-view" class="view active">
-    <div class="left-col" id="podium"></div>
-    <div class="right-col" id="lower"></div>
+  <div id="ytd-view" class="view board-view active">
+    <div class="left-col" id="ytd-podium"></div>
+    <div class="right-col" id="ytd-lower"></div>
   </div>
-  <div id="detail-view" class="view"></div>
+
+  <div id="rolling90-view" class="view board-view">
+    <div class="left-col" id="r90-podium"></div>
+    <div class="right-col" id="r90-lower"></div>
+  </div>
+
+  <div class="scoring-note">Points: 10 per follow-up attempt &nbsp;·&nbsp; 20 per documented lead &nbsp;·&nbsp; 15 per resolved lead &nbsp;·&nbsp; Updated weekly from ServiceTitan</div>
 </div>
 <div class="countdown" id="countdown"></div>
 
 <script>
-const HCA_COLORS = {
-  Amber:'#f472b6', Chester:'#a78bfa', Davis:'#34d399',
-  Jay:'#38bdf8', Joe:'#fb923c', Joseph:'#fbbf24',
-  Kyle:'#4ade80', Samir:'#e879f9', Trevor:'#67e8f9'
-};
+const stats = {"Amber": {"ytd": {"attempts": 51, "documented": 43, "leads": 41, "dismissed": 19, "pipeline": 1344563, "pts": 1655}, "rolling90": {"attempts": 31, "documented": 30, "leads": 28, "dismissed": 13, "pipeline": 1003349, "pts": 1105}}, "Chester": {"ytd": {"attempts": 86, "documented": 60, "leads": 75, "dismissed": 0, "pipeline": 1447897, "pts": 2060}, "rolling90": {"attempts": 71, "documented": 49, "leads": 60, "dismissed": 0, "pipeline": 1246564, "pts": 1690}}, "Davis": {"ytd": {"attempts": 17, "documented": 15, "leads": 53, "dismissed": 17, "pipeline": 1219864, "pts": 725}, "rolling90": {"attempts": 9, "documented": 9, "leads": 41, "dismissed": 8, "pipeline": 856421, "pts": 390}}, "Jay": {"ytd": {"attempts": 19, "documented": 17, "leads": 69, "dismissed": 4, "pipeline": 1161076, "pts": 590}, "rolling90": {"attempts": 7, "documented": 6, "leads": 50, "dismissed": 2, "pipeline": 879353, "pts": 220}}, "Joe": {"ytd": {"attempts": 2, "documented": 2, "leads": 63, "dismissed": 3, "pipeline": 1094804, "pts": 105}, "rolling90": {"attempts": 2, "documented": 2, "leads": 46, "dismissed": 3, "pipeline": 787042, "pts": 105}}, "Joseph": {"ytd": {"attempts": 0, "documented": 0, "leads": 80, "dismissed": 0, "pipeline": 1509767, "pts": 0}, "rolling90": {"attempts": 0, "documented": 0, "leads": 56, "dismissed": 0, "pipeline": 1075055, "pts": 0}}, "Kyle": {"ytd": {"attempts": 38, "documented": 26, "leads": 49, "dismissed": 14, "pipeline": 1148813, "pts": 1110}, "rolling90": {"attempts": 22, "documented": 17, "leads": 34, "dismissed": 8, "pipeline": 813344, "pts": 680}}, "Samir": {"ytd": {"attempts": 26, "documented": 21, "leads": 63, "dismissed": 2, "pipeline": 1036425, "pts": 710}, "rolling90": {"attempts": 12, "documented": 10, "leads": 40, "dismissed": 0, "pipeline": 644862, "pts": 320}}, "Trevor": {"ytd": {"attempts": 55, "documented": 36, "leads": 21, "dismissed": 17, "pipeline": 825875, "pts": 1525}, "rolling90": {"attempts": 55, "documented": 36, "leads": 21, "dismissed": 17, "pipeline": 825875, "pts": 1525}}};
+const HCA_COLORS = {"Amber": "#f472b6", "Chester": "#a78bfa", "Davis": "#34d399", "Jay": "#38bdf8", "Joe": "#fb923c", "Joseph": "#fbbf24", "Kyle": "#4ade80", "Samir": "#e879f9", "Trevor": "#67e8f9"};
 
-// REAL DATA — updated May 5, 2026
-const data = [
-  { name:'Kyle',    conv:44, attempts:17, conversions:47, totalLeads:47, pipeline:839471,  pts:4870 },
-  { name:'Davis',   conv:45, attempts:3,  conversions:45, totalLeads:38, pipeline:630774,  pts:4530 },
-  { name:'Joseph',  conv:42, attempts:2,  conversions:44, totalLeads:61, pipeline:1170787, pts:4420 },
-  { name:'Jay',     conv:40, attempts:18, conversions:40, totalLeads:55, pipeline:839559,  pts:4180 },
-  { name:'Joe',     conv:45, attempts:1,  conversions:42, totalLeads:49, pipeline:810296,  pts:4210 },
-  { name:'Chester', conv:38, attempts:62, conversions:34, totalLeads:55, pipeline:1027398, pts:4020 },
-  { name:'Amber',   conv:40, attempts:35, conversions:34, totalLeads:33, pipeline:645444,  pts:3750 },
-  { name:'Samir',   conv:38, attempts:23, conversions:31, totalLeads:49, pipeline:774502,  pts:3330 },
-  { name:'Trevor',  conv:40, attempts:28, conversions:23, totalLeads:20, pipeline:397555,  pts:2580 },
-];
-
-function fmtPipe(n) {
-  if(n>=1000000) return '$'+(n/1000000).toFixed(1)+'M';
-  return '$'+Math.round(n/1000)+'K';
+function ranked(period) {
+  return Object.entries(stats)
+    .map(([name, s]) => ({ name, ...s[period] }))
+    .sort((a,b) => b.pts - a.pts);
 }
 
-function setWeek() {
-  const now = new Date();
-  const day = now.getDay();
-  const mon = new Date(now); mon.setDate(now.getDate()-((day+6)%7));
-  const sun = new Date(mon); sun.setDate(mon.getDate()+6);
-  const fmt = d => d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-  document.getElementById('weekLabel').textContent = `YTD through ${now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
+function fmtPipeline(v) {
+  if(v >= 1000000) return '$'+(v/1000000).toFixed(1)+'M';
+  if(v >= 1000) return '$'+Math.round(v/1000)+'K';
+  return '$'+v;
 }
 
-function renderRankings() {
-  const sorted = [...data].sort((a,b)=>b.pts-a.pts);
-  const maxPts = sorted[0].pts;
-  const podiumEl = document.getElementById('podium');
-  const lowerEl = document.getElementById('lower');
+function renderBoard(period) {
+  const r = ranked(period);
+  const maxPts = r[0].pts || 1;
+  const podiumId = period==='ytd' ? 'ytd-podium' : 'r90-podium';
+  const lowerId  = period==='ytd' ? 'ytd-lower'  : 'r90-lower';
+  const podiumEl = document.getElementById(podiumId);
+  const lowerEl  = document.getElementById(lowerId);
 
-  podiumEl.innerHTML = sorted.slice(0,3).map((h,i) => {
-    const cls = ['rank-1-card','rank-2-card','rank-3-card'][i];
-    const medalEl = i===0 ? `<div class="crown">👑</div>` : `<div class="medal">${i+1}</div>`;
-    const ptsColor = i===0 ? 'var(--gold)' : i===1 ? 'var(--silver)' : 'var(--bronze)';
+  podiumEl.innerHTML = r.slice(0,3).map((h,i) => {
+    const cls = ['rank-1','rank-2','rank-3'][i];
+    const medal = i===0 ? '<div class="crown">👑</div>' : '<div class="medal">'+( i+1)+'</div>';
+    const ptsColor = i===0?'var(--gold)':i===1?'var(--silver)':'var(--bronze)';
     return `<div class="${cls}">
-      ${medalEl}
+      ${medal}
       <div class="card-info">
         <div class="card-name" style="color:${HCA_COLORS[h.name]||'var(--white)'}">${h.name}</div>
         <div class="card-stats">
-          <div class="card-stat">Conv: <strong>${h.conv}%</strong></div>
-          <div class="card-stat">Pipeline: <strong>${fmtPipe(h.pipeline)}</strong></div>
           <div class="card-stat">Attempts: <strong>${h.attempts}</strong></div>
+          <div class="card-stat">Documented: <strong>${h.documented}</strong></div>
+          <div class="card-stat">Resolved: <strong>${h.dismissed}</strong></div>
+          <div class="card-stat">Pipeline: <strong>${fmtPipeline(h.pipeline)}</strong></div>
         </div>
       </div>
       <div>
-        <div class="card-pts" style="color:${ptsColor}">${h.pts.toLocaleString()}</div>
+        <div class="card-pts" style="color:${ptsColor}">${h.pts}</div>
         <div class="pts-lbl">points</div>
       </div>
     </div>`;
   }).join('');
 
-  lowerEl.innerHTML = sorted.slice(3).map((h,i) => `
+  lowerEl.innerHTML = r.slice(3).map((h,i) => `
     <div class="rank-row">
       <div class="row-num">${i+4}</div>
       <div class="row-name" style="color:${HCA_COLORS[h.name]||'var(--white)'}">${h.name}</div>
+      <div class="row-stats">
+        <div class="row-stat">Att: <strong>${h.attempts}</strong></div>
+        <div class="row-stat">Doc: <strong>${h.documented}</strong></div>
+      </div>
       <div class="row-bar-wrap">
         <div class="row-bar" style="width:${Math.round((h.pts/maxPts)*100)}%;background:${HCA_COLORS[h.name]||'var(--orange)'}"></div>
       </div>
-      <div class="row-pts">${h.pts.toLocaleString()}</div>
+      <div class="row-pts">${h.pts}</div>
     </div>`).join('');
 }
 
-function renderDetail() {
-  const sorted = [...data].sort((a,b)=>b.pts-a.pts);
-  const maxPts = sorted[0].pts;
-  const el = document.getElementById('detail-view');
-  el.innerHTML = sorted.map((h,i) => `
-    <div class="hca-card ${i===0?'top-card':''}">
-      <div class="dc-header">
-        <div>
-          <div class="dc-rank">#${i+1} ${i===0?'👑':''}</div>
-          <div class="dc-name" style="color:${HCA_COLORS[h.name]||'var(--white)'}">${h.name}</div>
-        </div>
-        <div>
-          <div class="dc-pts">${h.pts.toLocaleString()}</div>
-          <div class="dc-pts-lbl">pts</div>
-        </div>
-      </div>
-      <div class="dc-metrics">
-        <div class="metric">
-          <div class="metric-val conv-val">${h.conv}%</div>
-          <div class="metric-lbl">Conv</div>
-        </div>
-        <div class="metric">
-          <div class="metric-val pipe-val">${fmtPipe(h.pipeline)}</div>
-          <div class="metric-lbl">Pipeline</div>
-        </div>
-        <div class="metric">
-          <div class="metric-val att-val">${h.attempts}</div>
-          <div class="metric-lbl">Attempts</div>
-        </div>
-      </div>
-      <div class="dc-bar">
-        <div class="dc-bar-fill" style="width:${Math.round((h.pts/maxPts)*100)}%"></div>
-      </div>
-    </div>`).join('');
+// Label
+function setLabel(period) {
+  const now = new Date();
+  const ytdStart = new Date('2026-01-01');
+  const r90Start = new Date(now); r90Start.setDate(r90Start.getDate()-90);
+  const fmt = d => d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  if(period==='ytd') {
+    document.getElementById('subLabel').textContent = 'Year to Date — '+fmt(ytdStart)+' through '+fmt(now);
+  } else {
+    document.getElementById('subLabel').textContent = 'Rolling 90-Day — '+fmt(r90Start)+' through '+fmt(now);
+  }
 }
 
-let currentView = 'rankings';
+let currentView = 'ytd';
 function switchView(name, btn) {
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById(name+'-view').classList.add('active');
   if(btn) btn.classList.add('active');
   currentView = name;
+  setLabel(name);
   resetCycle();
 }
 
+// COUNTDOWN
 const CYCLE = 15;
 let cycleTimer, dotTimer, elapsed = 0;
 function buildDots() {
@@ -527,30 +209,27 @@ function buildDots() {
   c.innerHTML = Array.from({length:CYCLE},(_,i)=>`<div class="cd-dot" id="d${i}"></div>`).join('');
 }
 function resetCycle() {
-  clearInterval(cycleTimer);
-  clearInterval(dotTimer);
-  elapsed = 0;
-  buildDots();
-  startCycle();
+  clearInterval(cycleTimer); clearInterval(dotTimer); elapsed = 0;
+  buildDots(); startCycle();
 }
 function startCycle() {
   dotTimer = setInterval(()=>{
     const dot = document.getElementById('d'+elapsed);
     if(dot) dot.classList.add('on');
     elapsed++;
-    if(elapsed >= CYCLE) {
+    if(elapsed>=CYCLE) {
       clearInterval(dotTimer);
-      const next = currentView === 'rankings' ? 'detail' : 'rankings';
-      const btn = [...document.querySelectorAll('.toggle-btn')]
-        .find(b=>b.textContent.toLowerCase().includes(next==='rankings'?'rank':'detail'));
+      const next = currentView==='ytd'?'rolling90':'ytd';
+      const btn = [...document.querySelectorAll('.toggle-btn')].find(b=>b.textContent.toLowerCase().includes(next==='ytd'?'ytd':'rolling'));
       switchView(next, btn);
     }
   }, 1000);
 }
 
-setWeek();
-renderRankings();
-renderDetail();
+// INIT
+renderBoard('ytd');
+renderBoard('rolling90');
+setLabel('ytd');
 buildDots();
 startCycle();
 </script>
