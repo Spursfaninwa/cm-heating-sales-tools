@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CM Heating — Install Availability</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1f2937;
+    --border: #30363d;
+    --border2: #21262d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --text3: #484f58;
+    --accent: #1d74c2;
+    --accent2: #2563eb;
+
+    /* status colors */
+    --c-filled:   #dc2626;
+    --c-filled-bg: rgba(220,38,38,0.15);
+    --c-avail:    #16a34a;
+    --c-avail-bg: rgba(22,163,74,0.15);
+    --c-half-pm:  #d97706;
+    --c-half-pm-bg: rgba(217,119,6,0.18);
+    --c-half-am:  #ca8a04;
+    --c-half-am-bg: rgba(202,138,4,0.15);
+    --c-off:      #374151;
+    --c-off-bg:   rgba(55,65,81,0.3);
+    --c-na:       #1f2937;
+    --c-na-bg:    rgba(31,41,55,0.5);
+    --c-hold:     #c2410c;
+    --c-hold-bg:  rgba(194,65,12,0.2);
+    --c-oncall:   #2563eb;
+    --c-oncall-bg: rgba(37,99,235,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    min-height: 100vh;
+  }
+
+  /* ── TOP BAR ───────────────────────────── */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    gap: 12px;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .logo span { color: var(--text2); }
+
+  .divider-v { width: 1px; height: 20px; background: var(--border); }
+
+  .meta-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    background: var(--surface2);
+    color: var(--text2);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--text); }
+
+  .btn-admin {
+    background: rgba(29,116,194,0.12);
+    border-color: rgba(29,116,194,0.4);
+    color: #60a5fa;
+  }
+  .btn-admin.active {
+    background: rgba(29,116,194,0.25);
+    border-color: var(--accent);
+    color: #93c5fd;
+  }
+  .btn-save {
+    background: rgba(22,163,74,0.15);
+    border-color: rgba(22,163,74,0.4);
+    color: #4ade80;
+    display: none;
+  }
+  .btn-save.visible { display: block; }
+
+  /* ── WEEK NAV ──────────────────────────── */
+  .weeknav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border2);
+    display: flex;
+    align-items: stretch;
+    padding: 0 16px;
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .weeknav::-webkit-scrollbar { display: none; }
+
+  .week-tab {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 8px 14px;
+    border-bottom: 2px solid transparent;
+    color: var(--text3);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .week-tab:hover { color: var(--text2); border-bottom-color: var(--border); }
+  .week-tab.active { color: #60a5fa; border-bottom-color: var(--accent); }
+  .week-tab.current { color: #4ade80; }
+  .week-tab.current.active { border-bottom-color: #22c55e; }
+
+  /* ── MAIN CONTENT ─────────────────────── */
+  .main { padding: 16px 20px 40px; }
+
+  .week-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .week-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .week-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .mod-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    background: rgba(29,116,194,0.12);
+    border: 1px solid rgba(29,116,194,0.3);
+    color: #60a5fa;
+    padding: 3px 10px;
+    border-radius: 4px;
+  }
+
+  .updated-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  /* ── GRID ──────────────────────────────── */
+  .grid-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 700px;
+  }
+
+  thead th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text2);
+    text-align: center;
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  thead th.today-col {
+    color: #4ade80;
+    background: rgba(34,197,94,0.06);
+  }
+
+  thead th.team-col {
+    text-align: left;
+    padding-left: 14px;
+    min-width: 180px;
+  }
+
+  .section-header td {
+    background: var(--bg);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    padding: 6px 14px 4px;
+    text-transform: uppercase;
+    border-top: 1px solid var(--border2);
+  }
+
+  tbody tr { border-bottom: 1px solid var(--border2); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover td:not(.status-cell) { background: rgba(255,255,255,0.02); }
+
+  .team-cell {
+    padding: 7px 14px;
+    min-width: 180px;
+    border-right: 1px solid var(--border2);
+  }
+
+  .team-name {
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .crew-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 1px;
+  }
+
+  .status-cell {
+    text-align: center;
+    padding: 5px 4px;
+    min-width: 96px;
+    cursor: default;
+    transition: background 0.1s;
+  }
+
+  .status-cell.today-col { background: rgba(34,197,94,0.04); }
+
+  .status-cell.editable { cursor: pointer; }
+  .status-cell.editable:hover .status-badge { opacity: 0.85; transform: scale(0.97); }
+
+  .status-badge {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 500;
+    padding: 3px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    transition: all 0.1s;
+    line-height: 1.4;
+  }
+
+  .s-FILLED       { background: var(--c-filled-bg);   color: #f87171;  border: 1px solid rgba(220,38,38,0.25); }
+  .s-FULL_DAY     { background: var(--c-avail-bg);    color: #4ade80;  border: 1px solid rgba(22,163,74,0.25); }
+  .s-HALF_PM      { background: var(--c-half-pm-bg);  color: #fbbf24;  border: 1px solid rgba(217,119,6,0.25); }
+  .s-HALF_AM      { background: var(--c-half-am-bg);  color: #fde68a;  border: 1px solid rgba(202,138,4,0.25); }
+  .s-TEAM_OFF     { background: var(--c-off-bg);      color: #4b5563;  border: 1px solid rgba(55,65,81,0.3); }
+  .s-NOT_AVAIL    { background: var(--c-na-bg);       color: var(--text3); border: 1px solid var(--border2); }
+  .s-HOLD         { background: var(--c-hold-bg);     color: #fb923c;  border: 1px solid rgba(194,65,12,0.3); }
+  .s-ON_CALL      { background: var(--c-oncall-bg);   color: #93c5fd;  border: 1px solid rgba(37,99,235,0.3); }
+  .s-NOT_SCHED    { background: rgba(30,41,59,0.5);   color: #475569;  border: 1px solid rgba(71,85,105,0.2); }
+
+  /* on-call rows */
+  .oncall-row td { background: rgba(29,116,194,0.05); }
+  .oncall-row .team-name { color: #60a5fa; font-size: 11px; }
+
+  /* ── NOTES ─────────────────────────────── */
+  .notes-wrap {
+    margin-top: 14px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .notes-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    flex: 1;
+    min-width: 220px;
+    max-width: 500px;
+  }
+
+  .notes-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .note-item {
+    font-size: 12px;
+    color: var(--text2);
+    padding: 3px 0;
+    border-bottom: 1px solid var(--border2);
+    line-height: 1.5;
+  }
+  .note-item:last-child { border-bottom: none; }
+
+  .note-warn { color: #fb923c; }
+  .note-info { color: #60a5fa; }
+
+  /* ── LEGEND ─────────────────────────────── */
+  .legend {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    align-items: center;
+  }
+
+  .legend-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-right: 4px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* ── EDIT DROPDOWN ─────────────────────── */
+  .edit-dropdown {
+    position: fixed;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    z-index: 200;
+    min-width: 160px;
+    overflow: hidden;
+    display: none;
+  }
+
+  .edit-dropdown.visible { display: block; }
+
+  .dd-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.1s;
+  }
+  .dd-item:hover { background: var(--surface2); }
+
+  .dd-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* unsaved indicator */
+  .unsaved-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #fb923c;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">CM Heating <span>/ Install Availability</span></div>
+    <div class="divider-v"></div>
+    <div class="meta-pill" id="todayPill">Today: —</div>
+  </div>
+  <div class="topbar-right">
+    <div id="unsavedPill" style="display:none;">
+      <span class="unsaved-dot"></span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#fb923c;margin-left:4px;">Unsaved</span>
+    </div>
+    <button class="btn btn-save" id="btnSave" onclick="saveChanges()">SAVE CHANGES</button>
+    <button class="btn btn-admin" id="btnAdmin" onclick="toggleAdmin()">ADMIN EDIT</button>
+  </div>
+</div>
+
+<!-- WEEK TABS -->
+<div class="weeknav" id="weeknav"></div>
+
+<!-- MAIN -->
+<div class="main" id="main"></div>
+
+<!-- EDIT DROPDOWN -->
+<div class="edit-dropdown" id="editDropdown">
+  <div class="dd-item" data-status="FULL DAY AVAIL"><div class="dd-dot" style="background:#16a34a"></div>Full Day Available</div>
+  <div class="dd-item" data-status="HALF DAY PM"><div class="dd-dot" style="background:#d97706"></div>Half Day PM</div>
+  <div class="dd-item" data-status="HALF DAY AM"><div class="dd-dot" style="background:#ca8a04"></div>Half Day AM</div>
+  <div class="dd-item" data-status="FILLED"><div class="dd-dot" style="background:#dc2626"></div>Filled</div>
+  <div class="dd-item" data-status="TEAM OFF"><div class="dd-dot" style="background:#374151"></div>Team Off</div>
+  <div class="dd-item" data-status="NOT AVAILABLE"><div class="dd-dot" style="background:#1f2937"></div>Not Available</div>
+  <div class="dd-item" data-status="HOLD"><div class="dd-dot" style="background:#c2410c"></div>Hold</div>
+  <div class="dd-item" data-status="ON CALL"><div class="dd-dot" style="background:#2563eb"></div>On Call</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════
+
+const STATUS_LABELS = {
+  'FILLED':         'FILLED',
+  'FULL DAY AVAIL': 'FULL AVAIL',
+  'HALF DAY PM':    'HALF PM',
+  'HALF DAY AM':    'HALF AM',
+  'TEAM OFF':       'TEAM OFF',
+  'NOT AVAILABLE':  'N/A',
+  'NOT SCHEDULED':  'NOT SCHED',
+  'HOLD':           'HOLD',
+  'ON CALL':        'ON CALL',
+};
+
+const STATUS_CLASS = {
+  'FILLED':         's-FILLED',
+  'FULL DAY AVAIL': 's-FULL_DAY',
+  'HALF DAY PM':    's-HALF_PM',
+  'HALF DAY AM':    's-HALF_AM',
+  'TEAM OFF':       's-TEAM_OFF',
+  'NOT AVAILABLE':  's-NOT_AVAIL',
+  'NOT SCHEDULED':  's-NOT_SCHED',
+  'HOLD':           's-HOLD',
+  'ON CALL':        's-ON_CALL',
+};
+
+const WEEKS = [
+{
+  id: 'may11',
+  title: 'May 11–16, 2026',
+  days: ['MON 5/11','TUE 5/12','WED 5/13','THU 5/14','FRI 5/15','SAT 5/16'],
+  todayIndex: 2, // Wednesday 5/13 — adjust if needed
+  mod: 'Geoff',
+  lastUpdated: '05/14/2026',
+  sections: [
+    { label: 'CONSTRUCTION SVCS', teams: [
+      { name:'Tim J',      crew:'',           row:['FILLED','FILLED','HALF DAY PM','FILLED','HALF DAY PM','TEAM OFF'] },
+      { name:'Johnny R',   crew:'',           row:['FILLED','HALF DAY PM','HALF DAY PM','HOLD','HOLD','TEAM OFF'] },
+      { name:'Richard W',  crew:'',           row:['TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF'] },
+    ]},
+    { label: 'INSTALL CREWS', teams: [
+      { name:'Div 1 Team 1', crew:'Spencer / Remis',    row:['FILLED','FILLED','FILLED','HALF DAY PM','TEAM OFF','TEAM OFF'] },
+      { name:'Div 1 Team 2', crew:'Hunter / Tony S',    row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'Div 1 Team 3', crew:'Jacob / Tobin',      row:['TEAM OFF','FILLED','FILLED','TEAM OFF','TEAM OFF','TEAM OFF'] },
+      { name:'Div 1 Team 4', crew:'Bohdan / Cody L',    row:['TEAM OFF','FILLED','HALF DAY PM','HALF DAY PM','TEAM OFF','TEAM OFF'] },
+      { name:'Div 2 Team 1', crew:'Christian F / Tyler',row:['TEAM OFF','FILLED','FILLED','FULL DAY AVAIL','FILLED','TEAM OFF'] },
+      { name:'Div 2 Team 2', crew:'Melvin / Doro',      row:['TEAM OFF','FILLED','FILLED','HALF DAY PM','HALF DAY PM','TEAM OFF'] },
+      { name:'Div 2 Team 3', crew:'Tim T',              row:['FILLED','FILLED','TEAM OFF','FULL DAY AVAIL','FILLED','TEAM OFF'] },
+      { name:'Div 2 Team 4', crew:'Paul / Christian V', row:['TEAM OFF','FILLED','FILLED','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'Div 2 Team 2b',crew:'(flex)',             row:['TEAM OFF','FULL DAY AVAIL','FULL DAY AVAIL','FILLED','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'Div 1 Team 7', crew:'(flex)',             row:['TEAM OFF','FULL DAY AVAIL','FULL DAY AVAIL','FILLED','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'Div 2 Team 3b',crew:'Ryan H / Bohdan',   row:['TEAM OFF','FULL DAY AVAIL','FULL DAY AVAIL','FILLED','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'Div 3 Team 2', crew:'Emanuel',            row:['TEAM OFF','TEAM OFF','TEAM OFF','FULL DAY AVAIL','FULL DAY AVAIL','FILLED'] },
+      { name:'Div 3 Team 4', crew:'Chris Ping',         row:['TEAM OFF','TEAM OFF','TEAM OFF','FULL DAY AVAIL','FULL DAY AVAIL','FILLED'] },
+    ]},
+    { label: 'ON CALL', isOncall: true, teams: [
+      { name:'On Call Tech', crew:'', row:['—','—','—','—','—','—'] },
+      { name:'On Call HCA',  crew:'', row:['—','Chester/Jay','Chester/Jay','Chester/Jay','Jay','Jay'] },
+    ]}
+  ],
+  notes: [
+    { text:'Div 1 Team 1 — FIREPLACE CREW', type:'info' },
+    { text:'Div 1 Team 2 — FIREPLACE CREW', type:'info' },
+    { text:'Div 2 Team 1 — FIREPLACE CREW', type:'info' },
+    { text:'Div 3 Team 3 — Only GF Garage Swap', type:'warn' },
+    { text:'PLEASE TRY TO FILL AFTERNOONS PRIOR TO OFFERING MORNINGS', type:'warn' },
+  ]
+},
+{
+  id: 'may18',
+  title: 'May 18–23, 2026',
+  days: ['MON 5/18','TUE 5/19','WED 5/20','THU 5/21','FRI 5/22','SAT 5/23'],
+  mod: 'Geoff',
+  lastUpdated: '05/14/2026',
+  sections: [
+    { label: 'CONSTRUCTION SVCS', teams: [
+      { name:'Tim J',      crew:'', row:['FILLED','HALF DAY PM','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'Johnny R',   crew:'', row:['FILLED','FILLED','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF','TEAM OFF'] },
+      { name:'Richard W',  crew:'', row:['TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF'] },
+    ]},
+    { label: 'INSTALL CREWS', teams: [
+      { name:'Div 1 Team 1', crew:'Spencer / Remis',    row:['FILLED','FILLED','FILLED','FULL DAY AVAIL','TEAM OFF','TEAM OFF'] },
+      { name:'Div 1 Team 2', crew:'Hunter / Tony S',    row:['FILLED','FULL DAY AVAIL','FILLED','FULL DAY AVAIL','TEAM OFF','TEAM OFF'] },
+      { name:'Div 1 Team 3', crew:'Jacob / Tobin',      row:['FILLED','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF','TEAM OFF'] },
+      { name:'Div 1 Team 4', crew:'Bohdan / Cody L',    row:['FILLED','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF','TEAM OFF'] },
+      { name:'Div 2 Team 1', crew:'Christian F / Tyler',row:['FILLED','FULL DAY AVAIL','FULL DAY AVAIL','FILLED','HALF DAY PM','TEAM OFF'] },
+      { name:'Div 2 Team 2', crew:'Melvin / Doro',      row:['FILLED','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','HALF DAY PM','TEAM OFF'] },
+      { name:'Div 2 Team 3', crew:'Tim T',              row:['FILLED','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'Div 2 Team 4', crew:'Paul / Christian V', row:['FILLED','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'Div 2 Team 2b',crew:'(flex)',             row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'Div 1 Team 7', crew:'(flex)',             row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'Div 2 Team 3b',crew:'Ryan H / Bohdan',   row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'Div 3 Team 2', crew:'Emanuel',            row:['FILLED','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FILLED'] },
+      { name:'Div 3 Team 4', crew:'Chris Ping',         row:['FILLED','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FILLED'] },
+    ]},
+    { label: 'ON CALL', isOncall: true, teams: [
+      { name:'On Call Tech', crew:'', row:['—','—','—','—','—','—'] },
+      { name:'On Call HCA',  crew:'', row:['—','—','—','—','—','—'] },
+    ]}
+  ],
+  notes: [
+    { text:'Div 1 Team 1 — FIREPLACE CREW', type:'info' },
+    { text:'Div 1 Team 2 — FIREPLACE CREW', type:'info' },
+    { text:'Div 2 Team 1 — FIREPLACE CREW', type:'info' },
+    { text:'Div 3 Team 3 — Only GF Garage Swap', type:'warn' },
+    { text:'PLEASE TRY TO FILL AFTERNOONS PRIOR TO OFFERING MORNINGS', type:'warn' },
+  ]
+},
+{
+  id: 'may26',
+  title: 'May 26–31, 2026',
+  days: ['MON 5/26 ☆','TUE 5/27','WED 5/28','THU 5/29','FRI 5/30','SAT 5/31'],
+  mod: 'Geoff',
+  lastUpdated: '05/14/2026',
+  sections: [
+    { label: 'CONSTRUCTION SVCS', teams: [
+      { name:'Evan E',     crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'Tim J',      crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'Johnny R',   crew:'', row:['TEAM OFF','—','—','TEAM OFF','—','—'] },
+      { name:'Richard W',  crew:'', row:['—','—','—','TEAM OFF','—','—'] },
+    ]},
+    { label: 'INSTALL CREWS', teams: [
+      { name:'DIV 1 Team 1', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 1 Team 2', crew:'', row:['TEAM OFF','FILLED','FILLED','FULL DAY AVAIL','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 1 Team 3', crew:'', row:['TEAM OFF','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL'] },
+      { name:'DIV 2 Team 1', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 2 Team 2', crew:'', row:['TEAM OFF','TEAM OFF','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 2 Team 3', crew:'', row:['TEAM OFF','FILLED','FILLED','TEAM OFF','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 3 Team 1', crew:'', row:['TEAM OFF','FILLED','TEAM OFF','HALF DAY PM','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 3 Team 2', crew:'', row:['TEAM OFF','FILLED','TEAM OFF','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 4 Team 1', crew:'', row:['TEAM OFF','FILLED','FULL DAY AVAIL','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 4 Team 2', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+    ]},
+    { label: 'ON CALL', isOncall: true, teams: [
+      { name:'On Call Tech', crew:'', row:['—','—','—','—','—','—'] },
+      { name:'On Call HCA',  crew:'', row:['—','—','—','—','—','—'] },
+    ]}
+  ],
+  notes: [
+    { text:'MEMORIAL DAY — Monday 5/26, team off', type:'warn' },
+    { text:'Reliance Transition — Fri/Sat', type:'info' },
+    { text:'Div 2 Team 2 — FIREPLACE CREW', type:'info' },
+    { text:'Div 3 Team 1 — FIREPLACE CREW', type:'info' },
+  ]
+},
+{
+  id: 'jun2',
+  title: 'Jun 2–7, 2026',
+  days: ['MON 6/2','TUE 6/3','WED 6/4','THU 6/5','FRI 6/6','SAT 6/7'],
+  mod: 'Geoff',
+  lastUpdated: '05/14/2026',
+  sections: [
+    { label: 'CONSTRUCTION SVCS', teams: [
+      { name:'Tim J',     crew:'', row:['FILLED','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'Johnny R',  crew:'', row:['TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF'] },
+      { name:'Richard W', crew:'', row:['FILLED','FILLED','FILLED','FILLED','FILLED','FILLED'] },
+    ]},
+    { label: 'INSTALL CREWS', teams: [
+      { name:'DIV 1 Team 1', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 1 Team 2', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 1 Team 3', crew:'', row:['TEAM OFF','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL'] },
+      { name:'DIV 2 Team 1', crew:'', row:['FILLED','FILLED','FILLED','HALF DAY PM','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 2 Team 2', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 2 Team 3', crew:'', row:['FILLED','FULL DAY AVAIL','FILLED','FULL DAY AVAIL','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 3 Team 1', crew:'', row:['FILLED','FILLED','FILLED','TEAM OFF','HALF DAY PM','FILLED'] },
+      { name:'DIV 3 Team 2', crew:'', row:['FILLED','FILLED','FILLED','TEAM OFF','HALF DAY PM','FILLED'] },
+      { name:'DIV 4 Team 1', crew:'', row:['FULL DAY AVAIL','FILLED','TEAM OFF','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 4 Team 2', crew:'', row:['FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF','FILLED','FILLED','TEAM OFF'] },
+    ]},
+    { label: 'ON CALL', isOncall: true, teams: [
+      { name:'On Call Tech', crew:'', row:['—','—','—','—','—','—'] },
+      { name:'On Call HCA',  crew:'', row:['—','—','—','—','—','—'] },
+    ]}
+  ],
+  notes: [
+    { text:'Div 2 Team 2 — FIREPLACE CREW', type:'info' },
+    { text:'Div 3 Team 1 — FIREPLACE CREW', type:'info' },
+  ]
+},
+{
+  id: 'jun9',
+  title: 'Jun 9–14, 2026',
+  days: ['MON 6/9','TUE 6/10','WED 6/11','THU 6/12','FRI 6/13','SAT 6/14'],
+  mod: 'Geoff',
+  lastUpdated: '05/14/2026',
+  sections: [
+    { label: 'CONSTRUCTION SVCS', teams: [
+      { name:'Tim J',     crew:'', row:['FILLED','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'Johnny R',  crew:'', row:['TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF'] },
+      { name:'Richard W', crew:'', row:['FILLED','FILLED','FILLED','FILLED','FILLED','FILLED'] },
+    ]},
+    { label: 'INSTALL CREWS', teams: [
+      { name:'DIV 1 Team 1', crew:'', row:['FILLED','FILLED','TEAM OFF','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 1 Team 2', crew:'', row:['FILLED','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 1 Team 3', crew:'', row:['TEAM OFF','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF','FULL DAY AVAIL'] },
+      { name:'DIV 2 Team 1', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 2 Team 2', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 2 Team 3', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 3 Team 1', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 3 Team 2', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 4 Team 1', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 4 Team 2', crew:'', row:['FILLED','FILLED','FILLED','TEAM OFF','FILLED','TEAM OFF'] },
+    ]},
+    { label: 'ON CALL', isOncall: true, teams: [
+      { name:'On Call Tech', crew:'', row:['—','—','—','—','—','—'] },
+      { name:'On Call HCA',  crew:'', row:['—','—','—','—','—','—'] },
+    ]}
+  ],
+  notes: [
+    { text:'Div 2 Team 2 — FIREPLACE CREW', type:'info' },
+    { text:'Div 3 Team 1 — FIREPLACE CREW', type:'info' },
+  ]
+},
+{
+  id: 'jun16',
+  title: 'Jun 16–21, 2026',
+  days: ['MON 6/16','TUE 6/17','WED 6/18','THU 6/19','FRI 6/20','SAT 6/21'],
+  mod: 'Geoff',
+  lastUpdated: '05/14/2026',
+  sections: [
+    { label: 'CONSTRUCTION SVCS', teams: [
+      { name:'Tim J',     crew:'', row:['FILLED','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'Johnny R',  crew:'', row:['TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF'] },
+      { name:'Richard W', crew:'', row:['FILLED','FILLED','FILLED','FILLED','FILLED','FILLED'] },
+    ]},
+    { label: 'INSTALL CREWS', teams: [
+      { name:'DIV 1 Team 1', crew:'', row:['FILLED','FILLED','FILLED','TEAM OFF','FILLED','FILLED'] },
+      { name:'DIV 1 Team 2', crew:'', row:['FILLED','FILLED','FILLED','TEAM OFF','FILLED','FILLED'] },
+      { name:'DIV 1 Team 3', crew:'', row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL'] },
+      { name:'DIV 2 Team 1', crew:'', row:['FILLED','FILLED','TEAM OFF','FILLED','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'DIV 2 Team 2', crew:'', row:['FILLED','FILLED','TEAM OFF','HALF DAY PM','HALF DAY PM','TEAM OFF'] },
+      { name:'DIV 2 Team 3', crew:'', row:['FILLED','HALF DAY PM','TEAM OFF','FULL DAY AVAIL','FILLED','TEAM OFF'] },
+      { name:'DIV 3 Team 1', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 3 Team 2', crew:'', row:['TEAM OFF','FILLED','FILLED','TEAM OFF','FILLED','TEAM OFF'] },
+      { name:'DIV 4 Team 1', crew:'', row:['FILLED','FILLED','FILLED','FULL DAY AVAIL','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 4 Team 2', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+    ]},
+    { label: 'ON CALL', isOncall: true, teams: [
+      { name:'On Call Tech', crew:'', row:['—','—','—','—','—','—'] },
+      { name:'On Call HCA',  crew:'', row:['—','—','—','—','—','—'] },
+    ]}
+  ],
+  notes: [
+    { text:'Div 3 Team 1 — FIREPLACE CREW', type:'info' },
+    { text:'MOD: Geoff — 425 542 0086', type:'info' },
+  ]
+},
+{
+  id: 'jun23',
+  title: 'Jun 23–28, 2026',
+  days: ['MON 6/23','TUE 6/24','WED 6/25','THU 6/26','FRI 6/27','SAT 6/28'],
+  mod: 'Lyle',
+  lastUpdated: '05/14/2026',
+  sections: [
+    { label: 'CONSTRUCTION SVCS', teams: [
+      { name:'Tim J',     crew:'', row:['FILLED','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'Johnny R',  crew:'', row:['FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF','TEAM OFF'] },
+      { name:'Richard W', crew:'', row:['FILLED','FILLED','FILLED','FILLED','FILLED','FILLED'] },
+    ]},
+    { label: 'INSTALL CREWS', teams: [
+      { name:'DIV 1 Team 1', crew:'', row:['FILLED','HALF DAY PM','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 1 Team 2', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 1 Team 3', crew:'', row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL'] },
+      { name:'DIV 2 Team 1', crew:'', row:['FILLED','FILLED','FILLED','TEAM OFF','FILLED','FILLED'] },
+      { name:'DIV 2 Team 2', crew:'', row:['FILLED','FILLED','FILLED','TEAM OFF','FILLED','FILLED'] },
+      { name:'DIV 2 Team 3', crew:'', row:['FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 3 Team 1', crew:'', row:['FILLED','FILLED','TEAM OFF','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 3 Team 2', crew:'', row:['FILLED','FILLED','TEAM OFF','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 4 Team 1', crew:'', row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'DIV 4 Team 2', crew:'', row:['TEAM OFF','FULL DAY AVAIL','FILLED','FILLED','FILLED','TEAM OFF'] },
+    ]},
+    { label: 'ON CALL', isOncall: true, teams: [
+      { name:'On Call Tech', crew:'', row:['—','—','—','—','—','—'] },
+      { name:'On Call HCA',  crew:'', row:['—','—','—','—','—','—'] },
+    ]}
+  ],
+  notes: [
+    { text:'Div 3 Team 1 — FIREPLACE CREW', type:'info' },
+    { text:'MOD: Lyle — 425 542 0086', type:'info' },
+  ]
+},
+{
+  id: 'jun30',
+  title: 'Jun 30–Jul 5, 2026',
+  days: ['MON 6/30','TUE 7/1','WED 7/2','THU 7/3','FRI 7/4 ☆','SAT 7/5'],
+  mod: 'Lyle',
+  lastUpdated: '05/14/2026',
+  sections: [
+    { label: 'CONSTRUCTION SVCS', teams: [
+      { name:'Tim J',     crew:'', row:['FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF','TEAM OFF'] },
+      { name:'Johnny R',  crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'Richard W', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+    ]},
+    { label: 'INSTALL CREWS', teams: [
+      { name:'DIV 1 Team 1', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 1 Team 2', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 1 Team 3', crew:'', row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL'] },
+      { name:'DIV 2 Team 1', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 2 Team 2', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 2 Team 3', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 3 Team 1', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 3 Team 2', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 4 Team 1', crew:'', row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'DIV 4 Team 2', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+    ]},
+    { label: 'ON CALL', isOncall: true, teams: [
+      { name:'On Call Tech', crew:'', row:['—','—','—','—','—','—'] },
+      { name:'On Call HCA',  crew:'', row:['—','—','—','—','—','—'] },
+    ]}
+  ],
+  notes: [
+    { text:'Div 3 Team 1 — FIREPLACE CREW', type:'info' },
+    { text:'Independence Day — Fri 7/4, expect team off', type:'warn' },
+    { text:'MOD: Lyle — 425 542 0086', type:'info' },
+  ]
+},
+{
+  id: 'jul7',
+  title: 'Jul 7–12, 2026',
+  days: ['MON 7/7','TUE 7/8','WED 7/9','THU 7/10','FRI 7/11','SAT 7/12'],
+  mod: 'Jen',
+  lastUpdated: '05/14/2026',
+  sections: [
+    { label: 'CONSTRUCTION SVCS', teams: [
+      { name:'Tim J',     crew:'', row:['TEAM OFF','FILLED','FILLED','TEAM OFF','FILLED','TEAM OFF'] },
+      { name:'Johnny R',  crew:'', row:['FILLED','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'Richard W', crew:'', row:['FILLED','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+    ]},
+    { label: 'INSTALL CREWS', teams: [
+      { name:'DIV 1 Team 1', crew:'', row:['FILLED','FILLED','TEAM OFF','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 1 Team 2', crew:'', row:['FILLED','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 1 Team 3', crew:'', row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL'] },
+      { name:'DIV 2 Team 1', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 2 Team 2', crew:'', row:['TEAM OFF','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 2 Team 3', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 3 Team 1', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 3 Team 2', crew:'', row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'DIV 4 Team 1', crew:'', row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'DIV 4 Team 2', crew:'', row:['FILLED','FILLED','FILLED','TEAM OFF','FILLED','FILLED'] },
+    ]},
+    { label: 'ON CALL', isOncall: true, teams: [
+      { name:'On Call Tech', crew:'', row:['—','—','—','—','—','—'] },
+      { name:'On Call HCA',  crew:'', row:['—','—','—','—','—','—'] },
+    ]}
+  ],
+  notes: [
+    { text:'Div 3 Team 1 — FIREPLACE CREW', type:'info' },
+    { text:'MOD: Jen — 425 542 0086', type:'info' },
+  ]
+},
+{
+  id: 'jul14',
+  title: 'Jul 14–19, 2026',
+  days: ['MON 7/14','TUE 7/15','WED 7/16','THU 7/17','FRI 7/18','SAT 7/19'],
+  mod: '',
+  lastUpdated: '05/14/2026',
+  sections: [
+    { label: 'CONSTRUCTION SVCS', teams: [
+      { name:'Tim J',     crew:'', row:['TEAM OFF','FILLED','FILLED','HALF DAY PM','FILLED','TEAM OFF'] },
+      { name:'Johnny R',  crew:'', row:['FILLED','FILLED','FILLED','FILLED','HALF DAY PM','TEAM OFF'] },
+      { name:'Richard W', crew:'', row:['FILLED','FILLED','FILLED','FULL DAY AVAIL','HALF DAY PM','TEAM OFF'] },
+    ]},
+    { label: 'INSTALL CREWS', teams: [
+      { name:'Div 1 Team 1', crew:'Christian / Doroteo', row:['FILLED','FILLED','FILLED','FILLED','FILLED','FILLED'] },
+      { name:'Div 1 Team 2', crew:'Bohdan / Gavino / Tyler', row:['FILLED','FILLED','FILLED','FILLED','FILLED','FILLED'] },
+      { name:'Div 1 Team 3', crew:'(DIV 1 Team 3)',      row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL'] },
+      { name:'Div 2 Team 1', crew:'Saul / Melvin',       row:['FILLED','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'Div 2 Team 2', crew:'Tim / Justyn',        row:['FILLED','FILLED','TEAM OFF','FILLED','FILLED','TEAM OFF'] },
+      { name:'Div 2 Team 3', crew:'Justin / James',      row:['TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF'] },
+      { name:'Div 3 Team 1', crew:'Cody / Spencer / Jakob', row:['TEAM OFF','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'Div 3 Team 2', crew:'Rodrigo / Tony',      row:['TEAM OFF','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 4 Team 1', crew:'(DIV 4 Team 1)',      row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'Div 4 Team 2', crew:'Jacob / Remis',       row:['FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF','TEAM OFF'] },
+    ]},
+    { label: 'ON CALL', isOncall: true, teams: [
+      { name:'On Call Tech', crew:'', row:['—','—','—','—','—','—'] },
+      { name:'On Call HCA',  crew:'', row:['—','—','—','—','—','—'] },
+    ]}
+  ],
+  notes: [
+    { text:'Div 3 Team 1 — FIREPLACE CREW', type:'info' },
+    { text:'Kat / Alejandro — Floater', type:'info' },
+  ]
+},
+{
+  id: 'jul21',
+  title: 'Jul 21–26, 2026',
+  days: ['MON 7/21','TUE 7/22','WED 7/23','THU 7/24','FRI 7/25','SAT 7/26'],
+  mod: '',
+  lastUpdated: '05/14/2026',
+  sections: [
+    { label: 'CONSTRUCTION SVCS', teams: [
+      { name:'Tim J',     crew:'', row:['FILLED','FILLED','FILLED','FILLED','HALF DAY PM','TEAM OFF'] },
+      { name:'Johnny R',  crew:'', row:['FILLED','FILLED','HALF DAY PM','FILLED','HALF DAY PM','TEAM OFF'] },
+      { name:'Richard W', crew:'', row:['TEAM OFF','HALF DAY PM','HALF DAY PM','HALF DAY PM','FULL DAY AVAIL','TEAM OFF'] },
+    ]},
+    { label: 'INSTALL CREWS', teams: [
+      { name:'Div 1 Team 1', crew:'Christian / Doroteo',    row:['FILLED','FILLED','FILLED','FILLED','TEAM OFF','TEAM OFF'] },
+      { name:'Div 1 Team 2', crew:'Bohdan / Gavino / Tyler',row:['FILLED','FILLED','FILLED','FILLED','FILLED','FILLED'] },
+      { name:'Div 1 Team 3', crew:'(DIV 1 Team 3)',         row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL'] },
+      { name:'Div 2 Team 1', crew:'Saul / Melvin',          row:['FILLED','FILLED','FILLED','FILLED','FILLED','FILLED'] },
+      { name:'Div 2 Team 2', crew:'Tim / Justyn',           row:['FILLED','FILLED','FILLED','FILLED','FILLED','FILLED'] },
+      { name:'Div 2 Team 3', crew:'Justin / James',         row:['FILLED','FILLED','TEAM OFF','FILLED','FILLED','TEAM OFF'] },
+      { name:'Div 3 Team 1', crew:'Cody / Spencer / Jakob', row:['FILLED','FILLED','FILLED','FILLED','FILLED','TEAM OFF'] },
+      { name:'Div 3 Team 2', crew:'Rodrigo / Tony',         row:['FILLED','FILLED','TEAM OFF','FILLED','FILLED','TEAM OFF'] },
+      { name:'DIV 4 Team 1', crew:'(DIV 4 Team 1)',         row:['FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','FULL DAY AVAIL','TEAM OFF'] },
+      { name:'Div 4 Team 2', crew:'Jacob / Remis',          row:['TEAM OFF','FILLED','TEAM OFF','TEAM OFF','TEAM OFF','TEAM OFF'] },
+    ]},
+    { label: 'ON CALL', isOncall: true, teams: [
+      { name:'On Call Tech', crew:'', row:['—','—','—','—','—','—'] },
+      { name:'On Call HCA',  crew:'', row:['—','—','—','—','—','—'] },
+    ]}
+  ],
+  notes: [
+    { text:'Div 3 Team 1 — FIREPLACE CREW', type:'info' },
+    { text:'Floater: Alejandro', type:'info' },
+  ]
+},
+];
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+
+let adminMode = false;
+let currentWeekIndex = 0;
+let overrides = {}; // { weekId_secIdx_teamIdx_dayIdx: status }
+let unsaved = false;
+let editTarget = null;
+
+// load saved overrides
+try {
+  const saved = localStorage.getItem('cmh_avail_overrides');
+  if (saved) overrides = JSON.parse(saved);
+  const savedUpdates = localStorage.getItem('cmh_avail_updates');
+  if (savedUpdates) {
+    const upd = JSON.parse(savedUpdates);
+    Object.entries(upd).forEach(([weekId, ts]) => {
+      const w = WEEKS.find(x => x.id === weekId);
+      if (w) w.lastUpdated = ts;
+    });
+  }
+} catch(e) {}
+
+// ═══════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════
+
+function getStatus(weekId, si, ti, di, defaultVal) {
+  const key = `${weekId}_${si}_${ti}_${di}`;
+  return overrides[key] !== undefined ? overrides[key] : defaultVal;
+}
+
+function statusBadge(status) {
+  const label = STATUS_LABELS[status] || status;
+  const cls = STATUS_CLASS[status] || 's-TEAM_OFF';
+  return `<span class="status-badge ${cls}">${label}</span>`;
+}
+
+function renderWeekTabs() {
+  const nav = document.getElementById('weeknav');
+  const today = new Date();
+  nav.innerHTML = WEEKS.map((w, i) => {
+    let cls = 'week-tab';
+    if (i === currentWeekIndex) cls += ' active';
+    // mark current week roughly
+    if (w.id === getCurrentWeekId()) cls += ' current';
+    return `<div class="${cls}" onclick="switchWeek(${i})">${w.title}</div>`;
+  }).join('');
+}
+
+function getCurrentWeekId() {
+  // May 11 is the current week (today is 5/14)
+  return 'may11';
+}
+
+function renderWeek(idx) {
+  const w = WEEKS[idx];
+  const main = document.getElementById('main');
+
+  // today column highlight — for may11, today is index 2 (Wed 5/13... wait today is 5/14 which is Thu = index 3)
+  // Let me fix: days: ['MON 5/11','TUE 5/12','WED 5/13','THU 5/14','FRI 5/15','SAT 5/16']
+  // Today (5/14) is index 3
+  let todayColIdx = -1;
+  if (w.id === 'may11') todayColIdx = 3; // Thu 5/14
+
+  // build table
+  let tableHTML = `
+    <div class="grid-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="team-col">Team</th>
+          ${w.days.map((d, di) => `<th${di === todayColIdx ? ' class="today-col"' : ''}>${d}</th>`).join('')}
+        </tr>
+      </thead>
+      <tbody>`;
+
+  w.sections.forEach((sec, si) => {
+    tableHTML += `<tr class="section-header"><td colspan="${w.days.length + 1}">${sec.label}</td></tr>`;
+    sec.teams.forEach((team, ti) => {
+      const rowCls = sec.isOncall ? ' class="oncall-row"' : '';
+      tableHTML += `<tr${rowCls}>
+        <td class="team-cell">
+          <div class="team-name">${team.name}</div>
+          ${team.crew ? `<div class="crew-name">${team.crew}</div>` : ''}
+        </td>`;
+      team.row.forEach((defStatus, di) => {
+        const status = getStatus(w.id, si, ti, di, defStatus);
+        const editCls = adminMode && !sec.isOncall ? ' editable' : '';
+        const todayCls = di === todayColIdx ? ' today-col' : '';
+        const key = `${w.id}_${si}_${ti}_${di}`;
+        tableHTML += `<td class="status-cell${editCls}${todayCls}" data-key="${key}" data-default="${defStatus}" onclick="${adminMode && !sec.isOncall ? `openDropdown(event,'${key}')` : ''}">
+          ${statusBadge(status)}
+        </td>`;
+      });
+      tableHTML += `</tr>`;
+    });
+  });
+
+  tableHTML += `</tbody></table></div>`;
+
+  // notes
+  let notesHTML = '';
+  if (w.notes && w.notes.length) {
+    notesHTML = `<div class="notes-wrap"><div class="notes-card">
+      <div class="notes-title">Notes</div>
+      ${w.notes.map(n => `<div class="note-item${n.type === 'warn' ? ' note-warn' : n.type === 'info' ? ' note-info' : ''}">${n.text}</div>`).join('')}
+    </div></div>`;
+  }
+
+  // legend
+  const legendHTML = `
+    <div class="legend">
+      <span class="legend-title">Legend</span>
+      <div class="legend-item">${statusBadge('FILLED')}</div>
+      <div class="legend-item">${statusBadge('FULL DAY AVAIL')}</div>
+      <div class="legend-item">${statusBadge('HALF DAY PM')}</div>
+      <div class="legend-item">${statusBadge('HALF DAY AM')}</div>
+      <div class="legend-item">${statusBadge('TEAM OFF')}</div>
+      <div class="legend-item">${statusBadge('NOT AVAILABLE')}</div>
+      <div class="legend-item">${statusBadge('HOLD')}</div>
+      <div class="legend-item">${statusBadge('ON CALL')}</div>
+    </div>`;
+
+  main.innerHTML = `
+    <div class="week-header">
+      <div class="week-title">${w.title}</div>
+      <div class="week-meta">
+        ${w.mod ? `<div class="mod-badge">MOD: ${w.mod}</div>` : ''}
+        <div class="updated-badge">Last Updated: ${w.lastUpdated}</div>
+        ${adminMode ? '<div class="mod-badge" style="background:rgba(251,146,60,0.1);border-color:rgba(251,146,60,0.3);color:#fb923c;">EDIT MODE ON</div>' : ''}
+      </div>
+    </div>
+    ${tableHTML}
+    ${notesHTML}
+    ${legendHTML}
+  `;
+}
+
+// ═══════════════════════════════════════════
+//  INTERACTIONS
+// ═══════════════════════════════════════════
+
+function switchWeek(idx) {
+  currentWeekIndex = idx;
+  renderWeekTabs();
+  renderWeek(idx);
+}
+
+function toggleAdmin() {
+  adminMode = !adminMode;
+  const btn = document.getElementById('btnAdmin');
+  btn.classList.toggle('active', adminMode);
+  btn.textContent = adminMode ? 'EXIT ADMIN' : 'ADMIN EDIT';
+  renderWeek(currentWeekIndex);
+}
+
+function openDropdown(e, key) {
+  e.stopPropagation();
+  const dd = document.getElementById('editDropdown');
+  editTarget = key;
+
+  // position
+  const rect = e.target.closest('td').getBoundingClientRect();
+  dd.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+  dd.style.left = Math.min(rect.left, window.innerWidth - 170) + 'px';
+  dd.classList.add('visible');
+}
+
+document.getElementById('editDropdown').querySelectorAll('.dd-item').forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!editTarget) return;
+    const status = item.dataset.status;
+    overrides[editTarget] = status;
+    unsaved = true;
+    document.getElementById('editDropdown').classList.remove('visible');
+    document.getElementById('unsavedPill').style.display = 'flex';
+    document.getElementById('btnSave').classList.add('visible');
+    renderWeek(currentWeekIndex);
+    editTarget = null;
+  });
+});
+
+document.addEventListener('click', () => {
+  document.getElementById('editDropdown').classList.remove('visible');
+});
+
+function saveChanges() {
+  try {
+    localStorage.setItem('cmh_avail_overrides', JSON.stringify(overrides));
+    // update lastUpdated for weeks that were edited
+    const touchedWeeks = new Set(Object.keys(overrides).map(k => k.split('_')[0]));
+    const updates = {};
+    const now = new Date();
+    const ts = `${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    touchedWeeks.forEach(id => {
+      const w = WEEKS.find(x => x.id === id);
+      if (w) { w.lastUpdated = ts; updates[id] = ts; }
+    });
+    localStorage.setItem('cmh_avail_updates', JSON.stringify(updates));
+    unsaved = false;
+    document.getElementById('unsavedPill').style.display = 'none';
+    document.getElementById('btnSave').classList.remove('visible');
+    renderWeek(currentWeekIndex);
+  } catch(e) {
+    alert('Save failed — localStorage may be blocked. Try another browser.');
+  }
+}
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+
+function init() {
+  // today pill
+  const now = new Date();
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('todayPill').textContent =
+    `Today: ${days[now.getDay()]} ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+
+  // find current week
+  const currentId = getCurrentWeekId();
+  currentWeekIndex = Math.max(0, WEEKS.findIndex(w => w.id === currentId));
+
+  renderWeekTabs();
+  renderWeek(currentWeekIndex);
+}
+
+init();
+</script>
+</body>
+</html>
