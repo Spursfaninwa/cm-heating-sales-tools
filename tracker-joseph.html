@@ -6,11 +6,7 @@
 <title>CM Heating — Joseph Ruble Follow-Up Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#f1f5f9;--white:#fff;--dark:#0f172a;--surface:#1e293b;
-  --orange:#f97316;--muted:#64748b;--border:#e2e8f0;
-  --green:#16a34a;--yellow:#d97706;--red:#dc2626;--blue:#0891b2;
-}
+:root{--bg:#f1f5f9;--white:#fff;--dark:#0f172a;--surface:#1e293b;--orange:#f97316;--muted:#64748b;--border:#e2e8f0;--green:#16a34a;--yellow:#d97706;--red:#dc2626;--blue:#0891b2;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--dark);padding:28px;font-size:14px;}
 .header{background:var(--surface);border-radius:12px;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
@@ -35,18 +31,10 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--dark);padd
 .lead-card[data-urgency="dead"]{border-left-color:#1e293b;}
 .lead-header{display:flex;align-items:center;gap:12px;padding:14px 18px;}
 .urgency-bar{width:4px;height:40px;border-radius:2px;flex-shrink:0;}
-.urgency-fresh{background:var(--green);}
-.urgency-warm{background:var(--yellow);}
-.urgency-hot{background:var(--orange);}
-.urgency-critical{background:var(--red);}
-.urgency-dead{background:#1e293b;}
+.urgency-fresh{background:var(--green);}.urgency-warm{background:var(--yellow);}.urgency-hot{background:var(--orange);}.urgency-critical{background:var(--red);}.urgency-dead{background:#1e293b;}
 .lead-name{flex:1;font-weight:700;font-size:15px;}
 .lead-days{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;min-width:56px;text-align:right;}
-.days-fresh{color:var(--green);}
-.days-warm{color:var(--yellow);}
-.days-hot{color:var(--orange);}
-.days-critical{color:var(--red);}
-.days-dead{color:#1e293b;}
+.days-fresh{color:var(--green);}.days-warm{color:var(--yellow);}.days-hot{color:var(--orange);}.days-critical{color:var(--red);}.days-dead{color:#1e293b;}
 .days-lbl{font-size:10px;color:var(--muted);text-align:right;font-weight:600;}
 .lead-meta{display:flex;gap:16px;padding:0 18px 10px;flex-wrap:wrap;}
 .meta-item{font-size:12px;color:var(--muted);}
@@ -77,7 +65,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--dark);padd
     <h1>Joseph — Follow-Up Tracker</h1>
     <p id="dateLabel"></p>
   </div>
-  <button class="print-btn" onclick="window.print()">⎙ Print / PDF</button>
+  <button class="print-btn" onclick="window.print()">&#9113; Print / PDF</button>
 </div>
 <div class="tiles">
   <div class="tile"><div class="tile-val">83</div><div class="tile-lbl">Open Leads</div></div>
@@ -87,9 +75,9 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--dark);padd
 </div>
 <div class="filters">
   <button class="filter-btn active" onclick="filterLeads('all',this)">All <span id="cnt-all"></span></button>
-  <button class="filter-btn" onclick="filterLeads('critical',this)">🔴 Critical 21+ <span id="cnt-critical"></span></button>
-  <button class="filter-btn" onclick="filterLeads('hot',this)">🟠 Hot 8–20d <span id="cnt-hot"></span></button>
-  <button class="filter-btn" onclick="filterLeads('fresh',this)">🟢 Fresh 0–7d <span id="cnt-fresh"></span></button>
+  <button class="filter-btn" onclick="filterLeads('critical',this)">&#128308; Critical 21+ <span id="cnt-critical"></span></button>
+  <button class="filter-btn" onclick="filterLeads('hot',this)">&#128992; Hot 8-20d <span id="cnt-hot"></span></button>
+  <button class="filter-btn" onclick="filterLeads('fresh',this)">&#128994; Fresh 0-7d <span id="cnt-fresh"></span></button>
   <span class="lead-count" id="showingCount"></span>
 </div>
 <div class="leads" id="leadsContainer"></div>
@@ -110,7 +98,6 @@ function urgencyClass(d){
 document.getElementById('dateLabel').textContent =
   'Week of ' + new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
 
-// Count filters
 function updateCounts(){
   document.getElementById('cnt-all').textContent = '('+leads.length+')';
   document.getElementById('cnt-critical').textContent = '('+leads.filter(l=>l.daysOld>=21).length+')';
@@ -126,57 +113,43 @@ function renderLeads(filtered){
     const urg = urgencyClass(lead.daysOld);
     const hasPrior = lead.priorNotes && lead.priorNotes.trim().length > 0;
     const priorHtml = hasPrior
-      ? `<div class="prior-section">
-           <button class="prior-toggle" onclick="togglePrior(${idx})">
-             ▶ Prior Notes <span class="prior-badge" id="badge-${idx}">1</span>
-           </button>
-           <div class="prior-content" id="prior-${idx}">
-             <div class="prior-entry"><div class="entry-time">ServiceTitan history</div>${lead.priorNotes}</div>
-           </div>
-         </div>`
+      ? '<div class="prior-section"><button class="prior-toggle" onclick="togglePrior('+idx+')">&#9654; Prior Notes <span class="prior-badge" id="badge-'+idx+'">1</span></button><div class="prior-content" id="prior-'+idx+'"><div class="prior-entry"><div class="entry-time">ServiceTitan history</div>'+lead.priorNotes+'</div></div></div>'
       : '';
-
     const nfuHtml = lead.nextFollowUp
-      ? `<div class="meta-item">📅 Next F/U: <strong>${lead.nextFollowUp}</strong></div>` : '';
+      ? '<div class="meta-item">&#128197; Next F/U: <strong>'+lead.nextFollowUp+'</strong></div>' : '';
 
-    container.innerHTML += `
-      <div class="lead-card" data-urgency="${urg}" data-idx="${idx}" id="card-${idx}">
-        <div class="lead-header">
-          <div class="urgency-bar urgency-${urg}"></div>
-          <div class="lead-name">${lead.customer}</div>
-          <div>
-            <div class="lead-days days-${urg}">${lead.daysOld}d</div>
-            <div class="days-lbl">days old</div>
-          </div>
-        </div>
-        <div class="lead-meta">
-          <div class="meta-item">💰 <strong>${lead.estimate}</strong></div>
-          <div class="meta-item">📞 <strong>${lead.phone}</strong></div>
-          <div class="meta-item">📍 ${lead.address}</div>
-          <div class="meta-item">Status: <strong>${lead.status}</strong></div>
-          <div class="meta-item">Last F/U: <strong>${lead.lastFollowUp}</strong></div>
-          ${nfuHtml}
-          <div class="meta-item">Attempts: <strong>${lead.followUps}</strong></div>
-          <div class="meta-item">Created: <strong>${lead.createdOn}</strong></div>
-        </div>
-        <div class="lead-actions">
-          <select class="status-select" id="status-${idx}">
-            <option value="Contacted" ${lead.status==='Contacted'?'selected':''}>Contacted</option>
-            <option value="Unreachable" ${lead.status==='Unreachable'?'selected':''}>Unreachable</option>
-            <option value="NotAttempted" ${lead.status==='NotAttempted'?'selected':''}>Not Attempted</option>
-            <option value="Dismissed">Dismissed</option>
-            <option value="Sold">✓ Sold</option>
-          </select>
-          <textarea class="notes-input" id="notes-${idx}" placeholder="What happened? (required to save)"></textarea>
-          <button class="save-btn" onclick="saveFollowUp(${idx})">Log Follow-Up</button>
-        </div>
-        <div class="st-banner" id="banner-${idx}">
-          <span>📋 Paste into ServiceTitan:</span>
-          <span id="banner-text-${idx}" style="flex:1;font-weight:600;"></span>
-          <button class="copy-btn" id="copy-btn-${idx}" onclick="copyNote(${idx})">Copy</button>
-        </div>
-        ${priorHtml}
-      </div>`;
+    container.innerHTML += '<div class="lead-card" data-urgency="'+urg+'" data-idx="'+idx+'" id="card-'+idx+'">'
+      +'<div class="lead-header"><div class="urgency-bar urgency-'+urg+'"></div>'
+      +'<div class="lead-name">'+lead.customer+'</div>'
+      +'<div><div class="lead-days days-'+urg+'">'+lead.daysOld+'d</div><div class="days-lbl">days old</div></div></div>'
+      +'<div class="lead-meta">'
+      +'<div class="meta-item">&#128176; <strong>'+lead.estimate+'</strong></div>'
+      +'<div class="meta-item">&#128222; <strong>'+lead.phone+'</strong></div>'
+      +'<div class="meta-item">&#128205; '+lead.address+'</div>'
+      +'<div class="meta-item">Status: <strong>'+lead.status+'</strong></div>'
+      +'<div class="meta-item">Last F/U: <strong>'+lead.lastFollowUp+'</strong></div>'
+      +nfuHtml
+      +'<div class="meta-item">Attempts: <strong>'+lead.followUps+'</strong></div>'
+      +'<div class="meta-item">Created: <strong>'+lead.createdOn+'</strong></div>'
+      +'</div>'
+      +'<div class="lead-actions">'
+      +'<select class="status-select" id="status-'+idx+'">'
+      +'<option value="Contacted"'+(lead.status==='Contacted'?' selected':'')+'>Contacted</option>'
+      +'<option value="Unreachable"'+(lead.status==='Unreachable'?' selected':'')+'>Unreachable</option>'
+      +'<option value="NotAttempted"'+(lead.status==='NotAttempted'?' selected':'')+'>Not Attempted</option>'
+      +'<option value="Dismissed">Dismissed</option>'
+      +'<option value="Sold">&#10003; Sold</option>'
+      +'</select>'
+      +'<textarea class="notes-input" id="notes-'+idx+'" placeholder="What happened? (required to save)"></textarea>'
+      +'<button class="save-btn" onclick="saveFollowUp('+idx+')">Log Follow-Up</button>'
+      +'</div>'
+      +'<div class="st-banner" id="banner-'+idx+'">'
+      +'<span>&#128203; Paste into ServiceTitan:</span>'
+      +'<span id="banner-text-'+idx+'" style="flex:1;font-weight:600;"></span>'
+      +'<button class="copy-btn" id="copy-btn-'+idx+'" onclick="copyNote('+idx+')">Copy</button>'
+      +'</div>'
+      +priorHtml
+      +'</div>';
   });
 }
 
@@ -194,11 +167,8 @@ function filterLeads(type, btn){
 function togglePrior(idx){
   const el = document.getElementById('prior-'+idx);
   const btn = el.previousElementSibling;
-  if(el.style.display==='block'){
-    el.style.display='none'; btn.textContent=btn.textContent.replace('▼','▶');
-  } else {
-    el.style.display='block'; btn.innerHTML=btn.innerHTML.replace('▶','▼');
-  }
+  if(el.style.display==='block'){ el.style.display='none'; }
+  else { el.style.display='block'; }
 }
 
 function saveFollowUp(idx){
@@ -216,17 +186,16 @@ function saveFollowUp(idx){
   btn.textContent = 'Saving...'; btn.disabled = true;
 
   const params = new URLSearchParams({
-    customer: lead.customer, status, notes: noteText, hca: HCA
+    customer: lead.customer, status: status, notes: noteText, hca: HCA
   });
 
-  fetch(SCRIPT_URL+'?'+params.toString())
+  // no-cors required for GitHub Pages → Google Apps Script
+  fetch(SCRIPT_URL+'?'+params.toString(), { mode: 'no-cors' })
     .then(()=>{
-      btn.textContent = '✓ Saved!'; btn.style.background = 'var(--green)';
-      // ST banner
+      btn.textContent = '&#10003; Saved!'; btn.style.background = 'var(--green)';
       const banner = document.getElementById('banner-'+idx);
       document.getElementById('banner-text-'+idx).textContent = noteText;
       banner.style.display = 'flex';
-      // Prepend to prior notes
       const priorEl = document.getElementById('prior-'+idx);
       if(priorEl){
         priorEl.innerHTML = '<div class="prior-entry"><div class="entry-time">'+ts+'</div>'+notes+'</div>' + priorEl.innerHTML;
@@ -235,8 +204,7 @@ function saveFollowUp(idx){
         const card = document.getElementById('card-'+idx);
         const priorSection = document.createElement('div');
         priorSection.className = 'prior-section';
-        priorSection.innerHTML = `<button class="prior-toggle" onclick="togglePrior(${idx})">▼ Prior Notes <span class="prior-badge" id="badge-${idx}">1</span></button>
-          <div class="prior-content" id="prior-${idx}" style="display:block"><div class="prior-entry"><div class="entry-time">${ts}</div>${notes}</div></div>`;
+        priorSection.innerHTML = '<button class="prior-toggle" onclick="togglePrior('+idx+')">&#9660; Prior Notes <span class="prior-badge" id="badge-'+idx+'">1</span></button><div class="prior-content" id="prior-'+idx+'" style="display:block"><div class="prior-entry"><div class="entry-time">'+ts+'</div>'+notes+'</div></div>';
         card.appendChild(priorSection);
       }
       document.getElementById('notes-'+idx).value = '';
@@ -251,7 +219,7 @@ function copyNote(idx){
   const text = document.getElementById('banner-text-'+idx).textContent;
   navigator.clipboard.writeText(text).then(()=>{
     const btn = document.getElementById('copy-btn-'+idx);
-    btn.textContent='✓ Copied!'; btn.classList.add('copied');
+    btn.textContent='&#10003; Copied!'; btn.classList.add('copied');
     setTimeout(()=>{ btn.textContent='Copy'; btn.classList.remove('copied'); }, 2500);
   });
 }
